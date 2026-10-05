@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GBPESA</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f3f7f5;
+ color:#17352b;
+}
+.app{
+ max-width:480px;
+ margin:auto;
+ min-height:100vh;
+ background:#fff;
+}
+header{
+ background:#087f5b;
+ color:#fff;
+ padding:20px;
+ text-align:center;
+}
+header h1{margin:0;font-size:28px}
+header p{margin:8px 0 0;font-size:13px}
+main{padding:16px}
+.card{
+ background:#fff;
+ border-radius:15px;
+ padding:16px;
+ margin-bottom:14px;
+ box-shadow:0 3px 15px rgba(0,0,0,.07);
+ border:1px solid #e8eeeB;
+}
+h2,h3{margin-top:0}
+input,select,button{
+ width:100%;
+ padding:13px;
+ margin:7px 0;
+ border-radius:9px;
+ border:1px solid #ccd8d3;
+ font-size:15px;
+}
+button{
+ background:#087f5b;
+ color:white;
+ border:none;
+ font-weight:bold;
+ cursor:pointer;
+}
+button.secondary{
+ background:#e8f3ef;
+ color:#087f5b;
+}
+button.danger{background:#c92a2a}
+button.warning{background:#e67700}
+.hidden{display:none!important}
+.message{
+ padding:11px;
+ border-radius:8px;
+ margin:8px 0;
+ background:#edf8f3;
+ color:#087f5b;
+ font-size:14px;
+}
+.error{
+ background:#fff0f0;
+ color:#c92a2a;
+}
+.balance{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+}
+.balanceBox{
+ background:#087f5b;
+ color:#fff;
+ padding:18px 10px;
+ border-radius:13px;
+ text-align:center;
+}
+.balanceBox small{display:block;opacity:.85}
+.balanceBox strong{
+ display:block;
+ margin-top:7px;
+ font-size:21px;
+}
+.package{
+ border:1px solid #dce8e3;
+ border-radius:12px;
+ padding:14px;
+ margin:9px 0;
+}
+.package b{font-size:18px}
+.row{
+ display:flex;
+ justify-content:space-between;
+ gap:8px;
+ align-items:center;
+}
+.row button{width:auto;padding:9px 13px}
+.tx{
+ padding:11px 0;
+ border-bottom:1px solid #edf0ef;
+ font-size:13px;
+}
+.nav{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:7px;
+ margin-bottom:14px;
+}
+.nav button{
+ font-size:12px;
+ padding:10px 5px;
+}
+.adminItem{
+ border:1px solid #e1e9e5;
+ padding:12px;
+ border-radius:10px;
+ margin:8px 0;
+ font-size:13px;
+}
+footer{
+ text-align:center;
+ padding:20px;
+ color:#789;
+ font-size:12px;
+}
+.loader{
+ text-align:center;
+ padding:25px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+<h1>GBPESA</h1>
+<p>NUNUA NA KUUZA GB KWA BEI NAFUU ZAIDI NA KUPATA FAIDA</p>
+</header>
+
+<main>
+
+<!-- AUTH -->
+<section id="auth">
+
+<div class="card" id="loginBox">
+<h2>INGIA</h2>
+
+<input id="loginEmail" type="email" placeholder="Email">
+<input id="loginPassword" type="password" placeholder="Password">
+
+<button onclick="login()">INGIA</button>
+<button class="secondary" onclick="showRegister()">JISAJILI</button>
+
+<div id="loginMsg"></div>
+</div>
+
+<div class="card hidden" id="registerBox">
+<h2>JISAJILI</h2>
+
+<input id="regName" placeholder="Jina kamili">
+<input id="regPhone" placeholder="Namba ya simu">
+<input id="regEmail" type="email" placeholder="Email">
+<input id="regPassword" type="password" placeholder="Password">
+
+<button onclick="register()">JISAJILI</button>
+<button class="secondary" onclick="showLogin()">RUDI INGIA</button>
+
+<div id="registerMsg"></div>
+</div>
+
+</section>
+
+
+<!-- USER APP -->
+<section id="userApp" class="hidden">
+
+<div class="nav">
+<button onclick="showPage('homePage')">HOME</button>
+<button onclick="showPage('walletPage')">WALLET</button>
+<button onclick="showPage('profilePage')">PROFILE</button>
+</div>
+
+
+<!-- HOME -->
+<div id="homePage">
+
+<div class="card">
+<h2>Karibu GBPESA</h2>
+
+<div class="balance">
+
+<div class="balanceBox">
+<small>Salio la Pesa</small>
+<strong id="moneyBalance">TSh 0</strong>
+</div>
+
+<div class="balanceBox">
+<small>Salio la GB</small>
+<strong id="gbBalance">0 GB</strong>
+</div>
+
+</div>
+</div>
+
+
+<div class="card">
+<h3>Nunua GB</h3>
+
+<div class="package">
+<div class="row">
+<div>
+<b>GB 1</b><br>
+TSh 1,000
+</div>
+<button onclick="buyGB(1)">NUNUA</button>
+</div>
+</div>
+
+<div class="package">
+<div class="row">
+<div>
+<b>GB 5</b><br>
+TSh 4,500
+</div>
+<button onclick="buyGB(5)">NUNUA</button>
+</div>
+</div>
+
+<div class="package">
+<div class="row">
+<div>
+<b>GB 10</b><br>
+TSh 8,000
+</div>
+<button onclick="buyGB(10)">NUNUA</button>
+</div>
+</div>
+
+<div id="buyMsg"></div>
+</div>
+
+
+<div class="card">
+<h3>Deposit</h3>
+
+<input id="depositAmount" type="number" min="100" placeholder="Kiasi TSh">
+
+<button onclick="deposit()">WEKA PESA</button>
+
+<div id="depositMsg"></div>
+</div>
+
+
+<div class="card">
+<h3>Withdrawal</h3>
+
+<input id="withdrawPhone" placeholder="Namba ya simu">
+<input id="withdrawAmount" type="number" min="100" placeholder="Kiasi TSh">
+
+<button onclick="withdraw()">OMBA WITHDRAWAL</button>
+
+<div id="withdrawMsg"></div>
+</div>
+
+</div>
+
+
+<!-- WALLET -->
+<div id="walletPage" class="hidden">
+
+<div class="card">
+<h2>Wallet</h2>
+
+<div class="balance">
+<div class="balanceBox">
+<small>Pesa</small>
+<strong id="walletMoney">TSh 0</strong>
+</div>
+
+<div class="balanceBox">
+<small>GB</small>
+<strong id="walletGB">0 GB</strong>
+</div>
+</div>
+
+</div>
+
+<div class="card">
+<h3>Transactions</h3>
+<div id="transactions">
+<div class="loader">Inapakia...</div>
+</div>
+</div>
+
+<div class="card">
+<h3>Withdrawals</h3>
+<div id="withdrawals">
+<div class="loader">Inapakia...</div>
+</div>
+</div>
+
+</div>
+
+
+<!-- PROFILE -->
+<div id="profilePage" class="hidden">
+
+<div class="card">
+<h2>Profile</h2>
+
+<p><b>Jina:</b> <span id="profileName">-</span></p>
+<p><b>Simu:</b> <span id="profilePhone">-</span></p>
+<p><b>Email:</b> <span id="profileEmail">-</span></p>
+<p><b>Role:</b> <span id="profileRole">user</span></p>
+
+<button class="danger" onclick="logout()">TOKA</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ADMIN -->
+<section id="adminApp" class="hidden">
+
+<div class="card">
+<h2>GBPESA ADMIN</h2>
+<p>Usimamizi wa users, balances na withdrawals.</p>
+
+<button onclick="loadAdmin()">REFRESH</button>
+<button class="danger" onclick="logout()">TOKA</button>
+</div>
+
+<div class="card">
+<h3>Users na Balances</h3>
+<div id="adminUsers">
+<div class="loader">Inapakia...</div>
+</div>
+</div>
+
+<div class="card">
+<h3>Withdrawal Requests</h3>
+<div id="adminWithdrawals">
+<div class="loader">Inapakia...</div>
+</div>
+</div>
+
+</section>
+
+</main>
+
+<footer>
+GBPESA © 2026
+</footer>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   SUPABASE CONFIG
+   ===================================================== */
+
+const SUPABASE_URL = "https://hkgvmbcbpkkwcomdkwrn.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_rRs-S2TFHA_WpuhdnU7L5Q_08bdLsLQ";
+
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/* =====================================================
+   HELPERS
+   ===================================================== */
+
+function money(value){
+ return "TSh " + Number(value || 0).toLocaleString();
+}
+
+function msg(id,text,error=false){
+ const el=document.getElementById(id);
+
+ if(!el)return;
+
+ el.innerHTML=
+ `<div class="message ${error?'error':''}">${text}</div>`;
+}
+
+function showRegister(){
+ document.getElementById("loginBox").classList.add("hidden");
+ document.getElementById("registerBox").classList.remove("hidden");
+}
+
+function showLogin(){
+ document.getElementById("registerBox").classList.add("hidden");
+ document.getElementById("loginBox").classList.remove("hidden");
+}
+
+function showPage(page){
+ ["homePage","walletPage","profilePage"].forEach(x=>{
+   document.getElementById(x).classList.add("hidden");
+ });
+
+ document.getElementById(page).classList.remove("hidden");
+
+ if(page==="walletPage"){
+   loadTransactions();
+   loadWithdrawals();
+ }
+}
+
+
+/* =====================================================
+   REGISTER
+   ===================================================== */
+
+async function register(){
+
+ const name=document.getElementById("regName").value.trim();
+ const phone=document.getElementById("regPhone").value.trim();
+ const email=document.getElementById("regEmail").value.trim();
+ const password=document.getElementById("regPassword").value;
+
+ if(!name || !phone || !email || !password){
+   msg("registerMsg","Jaza taarifa zote.",true);
+   return;
+ }
+
+ if(password.length < 6){
+   msg("registerMsg","Password iwe angalau herufi 6.",true);
+   return;
+ }
+
+ const {data,error}=await supabaseClient.auth.signUp({
+   email,
+   password,
+   options:{
+     data:{
+       full_name:name,
+       phone:phone
+     }
+   }
+ });
+
+ if(error){
+   msg("registerMsg",error.message,true);
+   return;
+ }
+
+ msg(
+   "registerMsg",
+   "Usajili umefanikiwa. Kama email confirmation imewashwa, thibitisha email yako kisha ingia."
+ );
+
+}
+
+
+/* =====================================================
+   LOGIN
+   ===================================================== */
+
+async function login(){
+
+ const email=document.getElementById("loginEmail").value.trim();
+ const password=document.getElementById("loginPassword").value;
+
+ if(!email || !password){
+   msg("loginMsg","Weka email na password.",true);
+   return;
+ }
+
+ const {data,error}=await supabaseClient.auth.signInWithPassword({
+   email,
+   password
+ });
+
+ if(error){
+   msg("loginMsg",error.message,true);
+   return;
+ }
+
+ await startApp();
+
+}
+
+
+/* =====================================================
+   START APP
+   ===================================================== */
+
+async function startApp(){
+
+ const {data:{user}}=
+ await supabaseClient.auth.getUser();
+
+ if(!user)return;
+
+ document.getElementById("auth").classList.add("hidden");
+
+ const {data:profile,error}=await supabaseClient
+   .from("profiles")
+   .select("*")
+   .eq("id",user.id)
+   .single();
+
+ if(error){
+   console.error(error);
+   return;
+ }
+
+ document.getElementById("profileName").textContent=
+   profile.full_name || "-";
+
+ document.getElementById("profilePhone").textContent=
+   profile.phone || "-";
+
+ document.getElementById("profileEmail").textContent=
+   user.email || "-";
+
+ document.getElementById("profileRole").textContent=
+   profile.role || "user";
+
+ if(profile.role==="admin"){
+
+   document.getElementById("adminApp")
+     .classList.remove("hidden");
+
+   document.getElementById("userApp")
+     .classList.add("hidden");
+
+   loadAdmin();
+
+ }else{
+
+   document.getElementById("userApp")
+     .classList.remove("hidden");
+
+   document.getElementById("adminApp")
+     .classList.add("hidden");
+
+   loadWallet();
+   loadTransactions();
+   loadWithdrawals();
+ }
+
+}
+
+
+/* =====================================================
+   WALLET
+   ===================================================== */
+
+async function loadWallet(){
+
+ const {data:{user}}=
+ await supabaseClient.auth.getUser();
+
+ if(!user)return;
+
+ const {data,error}=await supabaseClient
+   .from("wallets")
+   .select("balance,gb_balance")
+   .eq("user_id",user.id)
+   .single();
+
+ if(error){
+   console.error(error);
+   return;
+ }
+
+ const balance=Number(data.balance || 0);
+ const gb=Number(data.gb_balance || 0);
+
+ document.getElementById("moneyBalance").textContent=money(balance);
+ document.getElementById("gbBalance").textContent=gb+" GB";
+
+ document.getElementById("walletMoney").textContent=money(balance);
+ document.getElementById("walletGB").textContent=gb+" GB";
+}
+
+
+/* =====================================================
+   BUY GB
+   ===================================================== */
+
+async function buyGB(gb){
+
+ msg("buyMsg","Inashughulikia...");
+
+ const {data,error}=await supabaseClient
+   .rpc("buy_gb",{p_gb:gb});
+
+ if(error){
+   msg("buyMsg",error.message,true);
+   return;
+ }
+
+ msg(
+   "buyMsg",
+   "Umefanikiwa kununua GB "+gb+"."
+ );
+
+ await loadWallet();
+ await loadTransactions();
+
+}
+
+
+/* =====================================================
+   DEPOSIT
+   ===================================================== */
+
+async function deposit(){
+
+ const amount=Number(
+   document.getElementById("depositAmount").value
+ );
+
+ if(!amount || amount < 100){
+   msg(
+     "depositMsg",
+     "Kiasi cha chini ni TSh 100.",
+     true
+   );
+   return;
+ }
+
+ /*
+   Deposit provider itaunganishwa hapa.
+   Kwa sasa hakuna kuongeza balance moja kwa moja
+   bila payment confirmation.
+ */
+
+ msg(
+   "depositMsg",
+   "Deposit ya automatic inahitaji payment provider/API. Hatuongezi salio bila malipo kuthibitishwa.",
+   true
+ );
+
+}
+
+
+/* =====================================================
+   WITHDRAW
+   ===================================================== */
+
+async function withdraw(){
+
+ const phone=document
+   .getElementById("withdrawPhone")
+   .value.trim();
+
+ const amount=Number(
+   document.getElementById("withdrawAmount").value
+ );
+
+ if(!phone || !amount){
+   msg(
+     "withdrawMsg",
+     "Weka namba ya simu na kiasi.",
+     true
+   );
+   return;
+ }
+
+ if(amount < 100){
+   msg(
+     "withdrawMsg",
+     "Kiasi cha chini ni TSh 100.",
+     true
+   );
+   return;
+ }
+
+ msg("withdrawMsg","Inashughulikia...");
+
+ const {data,error}=await supabaseClient
+   .rpc(
+     "request_withdrawal",
+     {
+       p_amount:amount,
+       p_phone:phone,
+       p_provider:"mobile_money"
+     }
+   );
+
+ if(error){
+   msg("withdrawMsg",error.message,true);
+   return;
+ }
+
+ msg(
+   "withdrawMsg",
+   "Withdrawal request imetumwa kwa admin."
+ );
+
+ document.getElementById("withdrawPhone").value="";
+ document.getElementById("withdrawAmount").value="";
+
+ await loadWallet();
+ await loadWithdrawals();
+ await loadTransactions();
+
+}
+
+
+/* =====================================================
+   TRANSACTIONS
+   ===================================================== */
+
+async function loadTransactions(){
+
+ const {data:{user}}=
+ await supabaseClient.auth.getUser();
+
+ if(!user)return;
+
+ const {data,error}=await supabaseClient
+   .from("transactions")
+   .select("*")
+   .eq("user_id",user.id)
+   .order("created_at",{ascending:false})
+   .limit(50);
+
+ if(error){
+   console.error(error);
+   return;
+ }
+
+ const box=document.getElementById("transactions");
+
+ if(!data || data.length===0){
+   box.innerHTML="<p>Hakuna transactions bado.</p>";
+   return;
+ }
+
+ box.innerHTML=data.map(tx=>`
+
+ <div class="tx">
+ <b>${escapeHTML(tx.type || "")}</b><br>
+ Kiasi: ${money(tx.amount)}<br>
+ Status: ${escapeHTML(tx.status || "")}<br>
+ ${escapeHTML(tx.description || "")}<br>
+ <small>${new Date(tx.created_at).toLocaleString()}</small>
+ </div>
+
+ `).join("");
+
+}
+
+
+/* =====================================================
+   USER WITHDRAWALS
+   ===================================================== */
+
+async function loadWithdrawals(){
+
+ const {data:{user}}=
+ await supabaseClient.auth.getUser();
+
+ if(!user)return;
+
+ const {data,error}=await supabaseClient
+   .from("withdrawals")
+   .select("*")
+   .eq("user_id",user.id)
+   .order("created_at",{ascending:false})
+   .limit(50);
+
+ if(error){
+   console.error(error);
+   return;
+ }
+
+ const box=document.getElementById("withdrawals");
+
+ if(!data || data.length===0){
+   box.innerHTML="<p>Hakuna withdrawal bado.</p>";
+   return;
+ }
+
+ box.innerHTML=data.map(w=>`
+
+ <div class="tx">
+ <b>${money(w.amount)}</b><br>
+ Simu: ${escapeHTML(w.phone || "")}<br>
+ Status: ${escapeHTML(w.status || "")}<br>
+ ${w.failure_reason
+   ? "Sababu: "+escapeHTML(w.failure_reason)
+   : ""}
+ </div>
+
+ `).join("");
+
+}
+
+
+/* =====================================================
+   ADMIN
+   ===================================================== */
+
+async function loadAdmin(){
+
+ await loadAdminUsers();
+ await loadAdminWithdrawals();
+
+}
+
+
+/* =====================================================
+   ADMIN USERS
+   ===================================================== */
+
+async function loadAdminUsers(){
+
+ const box=document.getElementById("adminUsers");
+
+ box.innerHTML=
+   '<div class="loader">Inapakia users...</div>';
+
+ const {data,error}=await supabaseClient
+   .rpc("get_admin_users");
+
+ if(error){
+   box.innerHTML=
+     `<div class="message error">${escapeHTML(error.message)}</div>`;
+   return;
+ }
+
+ if(!data || data.length===0){
+   box.innerHTML="<p>Hakuna users.</p>";
+   return;
+ }
+
+ box.innerHTML=data.map(u=>`
+
+ <div class="adminItem">
+
+ <b>${escapeHTML(u.full_name || "User")}</b><br>
+
+ Email: ${escapeHTML(u.email || "-")}<br>
+
+ Simu: ${escapeHTML(u.phone || "-")}<br>
+
+ Role: ${escapeHTML(u.role || "user")}<br>
+
+ Salio: <b>${money(u.balance)}</b><br>
+
+ GB: <b>${Number(u.gb_balance || 0)} GB</b>
+
+ </div>
+
+ `).join("");
+
+}
+
+
+/* =====================================================
+   ADMIN WITHDRAWALS
+   ===================================================== */
+
+async function loadAdminWithdrawals(){
+
+ const box=document.getElementById("adminWithdrawals");
+
+ box.innerHTML=
+   '<div class="loader">Inapakia withdrawals...</div>';
+
+ const {data,error}=await supabaseClient
+   .from("withdrawals")
+   .select("*")
+   .order("created_at",{ascending:false})
+   .limit(100);
+
+ if(error){
+   box.innerHTML=
+     `<div class="message error">${escapeHTML(error.message)}</div>`;
+   return;
+ }
+
+ if(!data || data.length===0){
+   box.innerHTML="<p>Hakuna withdrawal.</p>";
+   return;
+ }
+
+ box.innerHTML=data.map(w=>`
+
+ <div class="adminItem">
+
+ <b>${money(w.amount)}</b><br>
+
+ Simu: ${escapeHTML(w.phone || "-")}<br>
+
+ Status: ${escapeHTML(w.status || "-")}<br>
+
+ Provider:
+ ${escapeHTML(w.provider || "-")}<br>
+
+ ${
+   w.status==="pending"
+   ?
+   `
+   <button onclick="approveWithdrawal('${w.id}')">
+   APPROVE
+   </button>
+
+   <button
+   class="danger"
+   onclick="rejectWithdrawal('${w.id}')">
+   REJECT
+   </button>
+   `
+   :
+   ""
+ }
+
+ </div>
+
+ `).join("");
+
+}
+
+
+/* =====================================================
+   APPROVE WITHDRAWAL
+   ===================================================== */
+
+async function approveWithdrawal(id){
+
+ const reference=prompt(
+   "Weka provider reference (kama ipo):"
+ );
+
+ const {data,error}=await supabaseClient
+   .rpc(
+     "approve_withdrawal",
+     {
+       p_withdrawal_id:id,
+       p_provider_reference:reference || null
+     }
+   );
+
+ if(error){
+   alert(error.message);
+   return;
+ }
+
+ alert("Withdrawal approved.");
+
+ await loadAdmin();
+
+}
+
+
+/* =====================================================
+   REJECT WITHDRAWAL
+   ===================================================== */
+
+async function rejectWithdrawal(id){
+
+ const reason=prompt(
+   "Andika sababu ya kukataa:"
+ );
+
+ if(!reason)return;
+
+ const {data,error}=await supabaseClient
+   .rpc(
+     "reject_withdrawal",
+     {
+       p_withdrawal_id:id,
+       p_reason:reason
+     }
+   );
+
+ if(error){
+   alert(error.message);
+   return;
+ }
+
+ alert("Withdrawal rejected na pesa imerudishwa.");
+
+ await loadAdmin();
+
+}
+
+
+/* =====================================================
+   LOGOUT
+   ===================================================== */
+
+async function logout(){
+
+ await supabaseClient.auth.signOut();
+
+ location.reload();
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+   ===================================================== */
+
+function escapeHTML(value){
+
+ return String(value ?? "")
+   .replaceAll("&","&amp;")
+   .replaceAll("<","&lt;")
+   .replaceAll(">","&gt;")
+   .replaceAll('"',"&quot;")
+   .replaceAll("'","&#039;");
+
+}
+
+
+/* =====================================================
+   AUTH SESSION
+   ===================================================== */
+
+supabaseClient.auth.onAuthStateChange(
+ async (event,session)=>{
+
+   if(session){
+     setTimeout(startApp,0);
+   }
+
+ }
+);
+
+
+/* =====================================================
+   INITIAL LOAD
+   ===================================================== */
+
+(async()=>{
+
+ const {data:{session}}=
+ await supabaseClient.auth.getSession();
+
+ if(session){
+   await startApp();
+ }
+
+})();
+
+</script>
+
+</body>
+</html>
