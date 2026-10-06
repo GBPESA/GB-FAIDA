@@ -619,7 +619,6 @@ async function buyGB(gb){
 
 }
 
-
 /* =====================================================
    DEPOSIT
    ===================================================== */
@@ -636,11 +635,23 @@ async function deposit(){
      "Kiasi cha chini ni TSh 100.",
      true
    );
-  https://ultraner.com/pay/pl_fce292cb9276c489e82a940b1d04c0d2
    return;
  }
 
+ /*
+  * Fungua ukurasa wa malipo wa Ultraner
+  */
+ window.open(
+   "https://ultraner.com/pay/pl_fce292cb9276c489e82a940b1d04c0d2",
+   "_blank"
+ );
 
+ msg(
+   "depositMsg",
+   "Ukurasa wa malipo umefunguliwa. Kamilisha malipo kupitia Ultraner."
+ );
+
+ }
 
 /* =====================================================
    WITHDRAW
