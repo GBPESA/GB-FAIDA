@@ -626,35 +626,69 @@ async function buyGB(gb){
    DEPOSIT
    ===================================================== */
 
-async function deposit(){
+async function deposit() {
+  const amountInput = document.getElementById("depositAmount");
+  const amount = Number(amountInput?.value);
 
- const amount=Number(
-   document.getElementById("depositAmount").value
- );
+  if (!Number.isFinite(amount) || amount < 100) {
+    alert("Weka kiasi cha deposit cha angalau TSh 100.");
+    return;
+  }
 
- if(!amount || amount < 100){
-   msg(
-     "depositMsg",
-     "Kiasi cha chini ni TSh 100.",
-     true
-   );
-   return;
- }
+  const paymentPhone = prompt(
+    "Weka namba ya simu uliyotumia kulipia TSh " +
+    amount.toLocaleString() + ":"
+  );
 
- /*
-  * Fungua ukurasa wa malipo wa Ultraner
-  */
- window.open(
-   "https://ultraner.com/pay/pl_fce292cb9276c489e82a940b1d04c0d2",
-   "_blank"
- );
+  if (!paymentPhone || !paymentPhone.trim()) {
+    alert("Weka namba ya simu uliyotumia kulipia.");
+    return;
+  }
 
- msg(
-   "depositMsg",
-   "Ukurasa wa malipo umefunguliwa. Kamilisha malipo kupitia Ultraner."
- );
+  const reference = prompt(
+    "Weka namba ya muamala kutoka kwenye ujumbe wa malipo:"
+  );
 
- }
+  if (!reference || !reference.trim()) {
+    alert("Weka namba ya muamala.");
+    return;
+  }
+
+  const { data: { user }, error: userError } =
+    await supabaseClient.auth.getUser();
+
+  if (userError || !user) {
+    alert("Tafadhali ingia kwenye akaunti yako kwanza.");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("manual_deposits")
+    .insert({
+      user_id: user.id,
+      amount: amount,
+      payment_phone: paymentPhone.trim(),
+      transaction_reference: reference.trim(),
+      status: "pending"
+    });
+
+  if (error) {
+    if (error.code === "23505") {
+      alert("Namba hii ya muamala imeshatumika.");
+    } else {
+      alert("Ombi halijatumwa: " + error.message);
+    }
+    return;
+  }
+
+  alert(
+    "Ombi la deposit limetumwa kwa Admin. " +
+    "Salio litaongezwa baada ya malipo kuthibitishwa."
+  );
+
+  if (amountInput) amountInput.value = "";
+}
+
 
 /* =====================================================
    WITHDRAW
