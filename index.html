@@ -993,10 +993,12 @@ async function loadAdminDeposits() {
     .limit(100);
 
   if (error) {
-    box.innerHTML = "<p>Imeshindikana kupakia maombi ya deposit.</p>";
-    console.error(error);
-    return;
-  }
+  box.innerHTML =
+    '<div class="message error">Hitilafu: ' +
+    escapeHTML(error.message) +
+    ' (Code: ' + escapeHTML(error.code || "-") + ')</div>';
+  return;
+   } 
 
   const pending = (data || []).filter(d => d.status === "pending");
 
