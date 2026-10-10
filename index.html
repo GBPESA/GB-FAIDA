@@ -223,22 +223,23 @@ footer{
 
 <div class="card">
 <h3>Nunua GB</h3>
-
+ 
 <div class="package">
-<div class="row">
-<div>
-<b>GB 1</b><br>
-TSh 1,000
+  <div class="row">
+    <div>
+      <b>GB 1</b><br>
+      <span id="homeGb1Price">TSh 1,000</span>
+    </div>
+    <button onclick="buyGB(1)">NUNUA</button>
+  </div>
 </div>
-<button onclick="buyGB(1)">NUNUA</button>
-</div>
-</div>
+
 
 <div class="package">
 <div class="row">
 <div>
 <b>GB 5</b><br>
-TSh 4,500
+ <span id="homeGb5Price">TSh 4,500</span> 
 </div>
 <button onclick="buyGB(5)">NUNUA</button>
 </div>
@@ -248,7 +249,7 @@ TSh 4,500
 <div class="row">
 <div>
 <b>GB 10</b><br>
-TSh 8,000
+<span id="homeGb10Price">TSh 8,000</span> 
 </div>
 <button onclick="buyGB(10)">NUNUA</button>
 </div>
@@ -616,7 +617,7 @@ async function startApp(){
    console.error(error);
    return;
  }
-
+loadPublicPrices();
  document.getElementById("profileName").textContent=
    profile.full_name || "-";
 
@@ -1644,6 +1645,28 @@ async function loadAdminSettings() {
     console.error("Load settings error:", error);
     if (message) message.textContent = "Imeshindikana kupakia settings.";
   }
+}
+
+async function loadPublicPrices() {
+  const { data, error } = await supabaseClient
+    .from("app_settings")
+    .select("gb1_price,gb5_price,gb10_price")
+    .eq("id", 1)
+    .single();
+
+  if (error || !data) {
+    console.error("Imeshindikana kupakia bei:", error);
+    return;
+  }
+
+  document.getElementById("homeGb1Price").textContent =
+    money(data.gb1_price);
+
+  document.getElementById("homeGb5Price").textContent =
+    money(data.gb5_price);
+
+  document.getElementById("homeGb10Price").textContent =
+    money(data.gb10_price);
 }
 
 </script>
