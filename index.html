@@ -254,7 +254,10 @@ TSh 8,000
 
 <div class="card">
 <h3>Deposit</h3>
-
+<p style="font-weight:bold;color:green;">
+  LIPA KWA NAMBA: 0702715377
+</p>
+<p>Baada ya kulipa, hifadhi namba ya muamala ili uthibitishwe na ADMIN.</p>
 <input id="depositAmount" type="number" min="100" placeholder="Kiasi TSh">
 
 <button onclick="deposit()">WEKA PESA</button>
@@ -816,7 +819,7 @@ async function loadAdmin(){
 
  await loadAdminUsers();
  await loadAdminWithdrawals();
-
+await loadAdminDeposits();
 }
 
 
@@ -934,6 +937,67 @@ async function loadAdminWithdrawals(){
 }
 
 
+/* =========================
+   ADMIN MANUAL DEPOSITS
+========================= */
+
+async function loadAdminDeposits() {
+  const box = document.getElementById("adminDeposits");
+  if (!box) return;
+
+  box.innerHTML = '<p>Inapakia maombi ya deposit...</p>';
+
+  const { data, error } = await supabaseClient
+    .from("manual_deposits")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(100);
+
+  if (error) {
+    box.innerHTML = "<p>Imeshindikana kupakia maombi ya deposit.</p>";
+    console.error(error);
+    return;
+  }
+
+  const pending = (data || []).filter(d => d.status === "pending");
+
+  if (!pending.length) {
+    box.innerHTML = "<p>Hakuna maombi ya deposit yanayosubiri.</p>";
+    return;
+  }
+
+  box.innerHTML = pending.map(d => `
+    <div class="card">
+      <p><b>Kiasi:</b> TSh ${Number(d.amount).toLocaleString()}</p>
+      <p><b>Simu ya malipo:</b> ${escapeHtml(String(d.payment_phone || ""))}</p>
+      <p><b>Reference:</b> ${escapeHtml(String(d.transaction_reference || ""))}</p>
+      <p><b>Tarehe:</b> ${escapeHtml(String(d.created_at || ""))}</p>
+      <button onclick="approveManualDeposit('${d.id}')">
+        IDHINISHA DEPOSIT
+      </button>
+    </div>
+  `).join("");
+}
+
+async function approveManualDeposit(id) {
+  if (!confirm("Thibitisha kwamba malipo yameingia kweli kabla ya kuongeza salio. Unaendelea?")) {
+    return;
+  }
+
+  const { data, error } = await supabaseClient.rpc(
+    "approve_manual_deposit",
+    { p_deposit_id: id }
+  );
+
+  if (error) {
+    alert("Imeshindikana kuidhinisha: " + error.message);
+    return;
+  }
+
+  alert(data || "Deposit imeidhinishwa.");
+  await loadAdminDeposits();
+  await loadAdminUsers();
+ } 
 /* =====================================================
    APPROVE WITHDRAWAL
    ===================================================== */
