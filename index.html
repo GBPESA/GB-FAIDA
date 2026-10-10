@@ -422,6 +422,28 @@ TSh 8,000
 </div>
  </div> 
 
+<div class="card">
+<h3>⚙️ SETTINGS ZA GBPESA</h3>
+
+<label>Bei ya GB 1 (TSh)</label>
+<input type="number" id="settingGb1" value="1000" min="1">
+
+<label>Bei ya GB 5 (TSh)</label>
+<input type="number" id="settingGb5" value="4500" min="1">
+
+<label>Bei ya GB 10 (TSh)</label>
+<input type="number" id="settingGb10" value="8000" min="1">
+
+<label>Deposit ya chini (TSh)</label>
+<input type="number" id="settingMinDeposit" value="100" min="1">
+
+<label>Withdrawal ya chini (TSh)</label>
+<input type="number" id="settingMinWithdrawal" value="100" min="1">
+
+<button onclick="saveAdminSettings()">HIFADHI SETTINGS</button>
+<p id="settingsMessage"></p>
+</div>
+
 </section>
 
 </main>
@@ -1525,6 +1547,66 @@ async function markAllNotificationsRead(){
 
   loadNotifications();
 }
+ 
+async function saveAdminSettings() {
+  const message = document.getElementById("settingsMessage");
+
+  const gb1 = Number(document.getElementById("settingGb1").value);
+  const gb5 = Number(document.getElementById("settingGb5").value);
+  const gb10 = Number(document.getElementById("settingGb10").value);
+  const minDeposit = Number(document.getElementById("settingMinDeposit").value);
+  const minWithdrawal = Number(document.getElementById("settingMinWithdrawal").value);
+
+  if (![gb1, gb5, gb10, minDeposit, minWithdrawal].every(
+    n => Number.isFinite(n) && n > 0
+  )) {
+    message.textContent = "Weka thamani zote ziwe zaidi ya sifuri.";
+    return;
+  }
+
+  message.textContent = "Inahifadhi...";
+
+  try {
+    const { data: { user }, error: userError } =
+      await supabaseClient.auth.getUser();
+
+    if (userError || !user) {
+      message.textContent = "Ingia kwanza kwenye akaunti ya Admin.";
+      return;
+    }
+
+    const { data: profile, error: profileError } = await supabaseClient
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError || profile?.role !== "admin") {
+      message.textContent = "Ruhusa ya Admin inahitajika.";
+      return;
+    }
+
+    const { error } = await supabaseClient
+      .from("app_settings")
+      .update({
+        gb1_price: gb1,
+        gb5_price: gb5,
+        gb10_price: gb10,
+        min_deposit: minDeposit,
+        min_withdrawal: minWithdrawal,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", 1);
+
+    if (error) throw error;
+
+    message.textContent = "Settings zimehifadhiwa!";
+  } catch (error) {
+    console.error("Settings error:", error);
+    message.textContent = "Imeshindikana kuhifadhi settings. Angalia ruhusa za database.";
+  }
+}
+
 </script>
 
 </body>
