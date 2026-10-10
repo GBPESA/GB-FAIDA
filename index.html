@@ -334,6 +334,44 @@ TSh 8,000
 
 </div>
 
+<!-- MARKETPLACE -->
+<div id="marketPage" class="hidden">
+
+  <div class="card">
+    <h2>SOKO LA GB</h2>
+    <p>Nunua GB kutoka kwa watumiaji wengine au uza GB zako upate pesa.</p>
+    <p>Ada ya mauzo: 5%. Referral hupata 10% ya ada hiyo.</p>
+    <button onclick="loadMarketplace()">REFRESH SOKO</button>
+    <div id="marketMsg"></div>
+  </div>
+
+  <div class="card">
+    <h3>Uza GB ZAKO</h3>
+    <label for="sellGB">Kiasi cha GB</label>
+    <input id="sellGB" type="number" min="0.01" step="0.01" placeholder="Mfano: 2">
+
+    <label for="sellPrice">Bei kwa kila GB (TSh)</label>
+    <input id="sellPrice" type="number" min="1" step="1" placeholder="Mfano: 1500">
+
+    <button onclick="createListing()">WEKA SOKONI</button>
+    <p style="font-size:12px;color:#667">
+      GB zitaondolewa kwenye salio lako zinapowekwa sokoni.
+      Ukighairi tangazo ambalo halijauzwa, GB zitarudishwa.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>MATANGAZO YANGU</h3>
+    <div id="myListings">Bonyeza REFRESH SOKO kupakia matangazo.</div>
+  </div>
+
+  <div class="card">
+    <h3>GB ZINAZOUZWA</h3>
+    <div id="marketListings">Bonyeza REFRESH SOKO kupakia matangazo.</div>
+  </div>
+
+</div>
+
 </section>
 
 
@@ -851,6 +889,158 @@ async function loadWithdrawals(){
 
  `).join("");
 
+}
+
+/* =========================================
+   GBPESA MARKETPLACE
+========================================= */
+
+async function createListing(){
+  const gb = Number(document.getElementById("sellGB").value);
+  const price = Number(document.getElementById("sellPrice").value);
+
+  if(!Number.isFinite(gb) || gb <= 0 ||
+     !Number.isFinite(price) || price <= 0){
+    msg("marketMsg","Weka kiasi cha GB na bei sahihi.",true);
+    return;
+  }
+
+  if(!confirm(
+    "Una uhakika kuweka "+gb+" GB sokoni kwa TSh "+
+    price.toLocaleString()+" kwa kila GB?"
+  )) return;
+
+  msg("marketMsg","Inaweka tangazo...");
+
+  const {data,error} = await supabaseClient.rpc(
+    "create_marketplace_listing",
+    {
+      p_gb_amount: gb,
+      p_price_per_gb: price
+    }
+  );
+
+  if(error){
+    msg("marketMsg",error.message,true);
+    return;
+  }
+
+  msg("marketMsg","Tangazo limewekwa sokoni.");
+  document.getElementById("sellGB").value="";
+  document.getElementById("sellPrice").value="";
+
+  await loadMarketplace();
+  await loadWallet();
+}
+
+async function loadMarketplace(){
+  const marketBox = document.getElementById("marketListings");
+  const mineBox = document.getElementById("myListings");
+
+  if(!marketBox || !mineBox) return;
+
+  marketBox.innerHTML = '<div class="loader">Inapakia soko...</div>';
+  mineBox.innerHTML = '<div class="loader">Inapakia matangazo yako...</div>';
+
+  const {data:{user},error:userError} = await supabaseClient.auth.getUser();
+
+  if(userError || !user){
+    marketBox.innerHTML = "<p>Tafadhali ingia tena.</p>";
+    mineBox.innerHTML = "";
+    return;
+  }
+
+  const {data:listings,error} = await supabaseClient
+    .from("marketplace_listings")
+    .select("id,seller_id,gb_amount,price_per_gb,status,created_at")
+    .eq("status","open")
+    .order("created_at",{ascending:false})
+    .limit(100);
+
+  if(error){
+    marketBox.innerHTML =
+      '<div class="message error">'+escapeHTML(error.message)+'</div>';
+    mineBox.innerHTML = "";
+    return;
+  }
+
+  const all = listings || [];
+  const mine = all.filter(x => x.seller_id === user.id);
+  const others = all.filter(x => x.seller_id !== user.id);
+
+  if(mine.length === 0){
+    mineBox.innerHTML = "<p>Huna tangazo linalosubiri kuuzwa.</p>";
+  }else{
+    mineBox.innerHTML = mine.map(x => `
+      <div class="adminItem">
+        <b>${Number(x.gb_amount)} GB</b><br>
+        Bei kwa GB: ${money(x.price_per_gb)}<br>
+        Jumla: <b>${money(Number(x.gb_amount)*Number(x.price_per_gb))}</b><br>
+        Hali: ${escapeHTML(x.status)}
+        <button class="danger" onclick="cancelListing('${x.id}')">
+          GHARAGHA TANGAZO
+        </button>
+      </div>
+    `).join("");
+  }
+
+  if(others.length === 0){
+    marketBox.innerHTML = "<p>Hakuna matangazo mengine kwa sasa.</p>";
+  }else{
+    marketBox.innerHTML = others.map(x => `
+      <div class="adminItem">
+        <b>${Number(x.gb_amount)} GB</b><br>
+        Bei kwa GB: ${money(x.price_per_gb)}<br>
+        Jumla: <b>${money(Number(x.gb_amount)*Number(x.price_per_gb))}</b><br>
+        <button onclick="buyMarketplaceListing('${x.id}')">
+          NUNUA GB HIZI
+        </button>
+      </div>
+    `).join("");
+  }
+}
+
+async function buyMarketplaceListing(id){
+  if(!confirm(
+    "Thibitisha ununuzi. Pesa zitatolewa kwenye wallet yako na GB kuhamishiwa kwako ikiwa muamala utafanikiwa."
+  )) return;
+
+  msg("marketMsg","Inashughulikia ununuzi...");
+
+  const {data,error} = await supabaseClient.rpc(
+    "buy_marketplace_listing",
+    {p_listing_id:id}
+  );
+
+  if(error){
+    msg("marketMsg",error.message,true);
+    return;
+  }
+
+  msg("marketMsg","Ununuzi umekamilika.");
+  await loadMarketplace();
+  await loadWallet();
+  await loadTransactions();
+}
+
+async function cancelListing(id){
+  if(!confirm("Una uhakika unataka kughairi tangazo hili?")) return;
+
+  msg("marketMsg","Inaghairi tangazo...");
+
+  const {data,error} = await supabaseClient.rpc(
+    "cancel_marketplace_listing",
+    {p_listing_id:id}
+  );
+
+  if(error){
+    msg("marketMsg",error.message,true);
+    return;
+  }
+
+  msg("marketMsg","Tangazo limeghairiwa.");
+  await loadMarketplace();
+  await loadWallet();
 }
 
 
