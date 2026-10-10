@@ -375,6 +375,16 @@ TSh 8,000
 
 </div>
 
+<!-- NOTIFICATIONS -->
+<div id="notificationsPage" class="hidden">
+  <div class="card">
+    <h2>🔔 ARIFA ZANGU</h2>
+    <button onclick="loadNotifications()">SASISHA ARIFA</button>
+    <button onclick="markAllNotificationsRead()">SOMA ZOTE</button>
+    <div id="notificationsList">Inapakia arifa...</div>
+  </div>
+</div>
+
 </section>
 
 
@@ -408,6 +418,17 @@ TSh 8,000
 <div class="loader">Inapakia maombi ya deposit...</div>
 </div>
  </div>
+ 
+<!-- NOTIFICATIONS -->
+<div id="notificationsPage" class="hidden">
+  <div class="card">
+    <h2>🔔 ARIFA ZANGU</h2>
+    <button onclick="loadNotifications()">SASISHA ARIFA</button>
+    <button onclick="markAllNotificationsRead()">SOMA ZOTE</button>
+    <div id="notificationsList">Inapakia arifa...</div>
+  </div>
+</div>
+
 </section>
 
 </main>
@@ -459,8 +480,9 @@ function showLogin(){
  document.getElementById("loginBox").classList.remove("hidden");
 }
  
+
 function showPage(page){
- ["homePage","walletPage","profilePage","marketPage"].forEach(x=>{
+ ["homePage","walletPage","profilePage","marketPage","notificationsPage"].forEach(x=>{
    document.getElementById(x)?.classList.add("hidden");
  });
 
@@ -474,7 +496,12 @@ function showPage(page){
  if(page==="marketPage"){
    loadMarketplace();
  }
+
+ if(page==="notificationsPage"){
+   loadNotifications();
+ }
 }
+
 
 
 /* =====================================================
@@ -1401,6 +1428,111 @@ supabaseClient.auth.onAuthStateChange(
   <span style="font-size:20px;">📞🌍</span>
   <span>WhatsApp Support</span>
 </a>
+
+<script>
+async function loadNotifications(){
+  const list = document.getElementById("notificationsList");
+  const count = document.getElementById("notificationCount");
+
+  if(!list) return;
+
+  list.textContent = "Inapakia arifa...";
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if(!user){
+      list.textContent = "Ingia kwenye akaunti yako kuona arifa.";
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("notifications")
+      .select("id,title,message,type,is_read,created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if(error) throw error;
+
+    const notifications = data || [];
+    const unread = notifications.filter(n => !n.is_read).length;
+
+    if(count) count.textContent = unread;
+
+    list.replaceChildren();
+
+    if(notifications.length === 0){
+      list.textContent = "Bado huna arifa.";
+      return;
+    }
+
+    notifications.forEach(n => {
+      const item = document.createElement("div");
+      item.className = "card";
+
+      const title = document.createElement("strong");
+      title.textContent = n.title;
+
+      const message = document.createElement("p");
+      message.textContent = n.message;
+
+      const date = document.createElement("small");
+      date.textContent = new Date(n.created_at).toLocaleString("sw-TZ");
+
+      item.append(title, message, date);
+
+      if(!n.is_read){
+        const button = document.createElement("button");
+        button.textContent = "SOMA ARIFA";
+        button.onclick = () => markNotificationRead(n.id);
+        item.append(button);
+      }
+
+      list.append(item);
+    });
+  } catch(error) {
+    list.textContent = "Imeshindikana kupakia arifa. Tafadhali jaribu tena.";
+    console.error("Notifications error:", error);
+  }
+}
+
+async function markNotificationRead(id){
+  const { data: { user } } = await supabase.auth.getUser();
+  if(!user) return;
+
+  const { error } = await supabase
+    .from("notifications")
+    .update({ is_read: true })
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if(error){
+    alert("Imeshindikana kusoma arifa.");
+    return;
+  }
+
+  loadNotifications();
+}
+
+async function markAllNotificationsRead(){
+  const { data: { user } } = await supabase.auth.getUser();
+  if(!user) return;
+
+  const { error } = await supabase
+    .from("notifications")
+    .update({ is_read: true })
+    .eq("user_id", user.id)
+    .eq("is_read", false);
+
+  if(error){
+    alert("Imeshindikana kusoma arifa zote.");
+    return;
+  }
+
+  loadNotifications();
+}
+</script>
 
 </body>
 </html>
