@@ -1607,6 +1607,44 @@ async function saveAdminSettings() {
   }
 }
 
+async function loadAdminSettings() {
+  const message = document.getElementById("settingsMessage");
+
+  try {
+    const { data: { user }, error: userError } =
+      await supabaseClient.auth.getUser();
+
+    if (userError || !user) return;
+
+    const { data: profile, error: profileError } = await supabaseClient
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError || profile?.role !== "admin") return;
+
+    const { data, error } = await supabaseClient
+      .from("app_settings")
+      .select("gb1_price,gb5_price,gb10_price,min_deposit,min_withdrawal")
+      .eq("id", 1)
+      .single();
+
+    if (error) throw error;
+
+    document.getElementById("settingGb1").value = data.gb1_price;
+    document.getElementById("settingGb5").value = data.gb5_price;
+    document.getElementById("settingGb10").value = data.gb10_price;
+    document.getElementById("settingMinDeposit").value = data.min_deposit;
+    document.getElementById("settingMinWithdrawal").value = data.min_withdrawal;
+
+    if (message) message.textContent = "Settings zimepakiwa.";
+  } catch (error) {
+    console.error("Load settings error:", error);
+    if (message) message.textContent = "Imeshindikana kupakia settings.";
+  }
+}
+
 </script>
 
 </body>
