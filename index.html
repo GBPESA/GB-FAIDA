@@ -112,7 +112,7 @@ button.warning{background:#e67700}
 }
 .nav{
  display:grid;
- grid-template-columns:repeat(4,1fr);
+ grid-template-columns:repeat(3,1fr);
  gap:7px;
  margin-bottom:14px;
 }
@@ -187,12 +187,15 @@ footer{
 <section id="userApp" class="hidden">
 
 
+
 <div class="nav">
 <button onclick="showPage('homePage')">HOME</button>
 <button onclick="showPage('walletPage')">WALLET</button>
 <button onclick="showPage('profilePage')">PROFILE</button>
 <button onclick="showPage('marketPage')">SOKO LA GB</button>
+<button onclick="showPage('notificationsPage')">🔔 ARIFA <span id="notificationCount">0</span></button>
 </div>
+
 
 
 
@@ -417,17 +420,7 @@ TSh 8,000
 <div id="adminDeposits">
 <div class="loader">Inapakia maombi ya deposit...</div>
 </div>
- </div>
- 
-<!-- NOTIFICATIONS -->
-<div id="notificationsPage" class="hidden">
-  <div class="card">
-    <h2>🔔 ARIFA ZANGU</h2>
-    <button onclick="loadNotifications()">SASISHA ARIFA</button>
-    <button onclick="markAllNotificationsRead()">SOMA ZOTE</button>
-    <div id="notificationsList">Inapakia arifa...</div>
-  </div>
-</div>
+ </div> 
 
 </section>
 
