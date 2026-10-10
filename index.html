@@ -1024,6 +1024,31 @@ async function loadAdminDeposits() {
       '<div class="message error">Hitilafu: ' +
       escapeHTML(e.message || String(e)) + '</div>';
   }
+ /* =========================
+   APPROVE MANUAL DEPOSIT
+========================= */
+
+async function approveManualDeposit(id) {
+  const confirmed = confirm(
+    "Je, umethibitisha kuwa malipo haya yameingia kweli?"
+  );
+
+  if (!confirmed) return;
+
+  const { data, error } = await supabaseClient.rpc(
+    "approve_manual_deposit",
+    { p_deposit_id: id }
+  );
+
+  if (error) {
+    alert("Imeshindikana: " + error.message);
+    return;
+  }
+
+  alert(data || "Deposit imeidhinishwa.");
+
+  await loadAdminDeposits();
+  await loadAdminUsers();
  }
 /* =====================================================
    APPROVE WITHDRAWAL
