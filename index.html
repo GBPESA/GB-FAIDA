@@ -719,12 +719,31 @@ async function buyGB(gb){
    DEPOSIT
    ===================================================== */
 
+
 async function deposit() {
   const amountInput = document.getElementById("depositAmount");
   const amount = Number(amountInput?.value);
 
-  if (!Number.isFinite(amount) || amount < 100) {
-    alert("Weka kiasi cha deposit cha angalau TSh 100.");
+  const { data: settings, error: settingsError } =
+    await supabaseClient
+      .from("app_settings")
+      .select("min_deposit")
+      .eq("id", 1)
+      .single();
+
+  if (settingsError || !settings) {
+    alert("Imeshindikana kupata kiwango cha chini cha deposit.");
+    console.error(settingsError);
+    return;
+  }
+
+  const minDeposit = Number(settings.min_deposit);
+
+  if (!Number.isFinite(amount) || amount < minDeposit) {
+    alert(
+      "Deposit ya chini ni TSh " +
+      minDeposit.toLocaleString() + "."
+    );
     return;
   }
 
@@ -781,6 +800,7 @@ async function deposit() {
 
   if (amountInput) amountInput.value = "";
 }
+
 
 
 /* =====================================================
