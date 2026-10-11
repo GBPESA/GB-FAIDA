@@ -235,7 +235,206 @@ footer{
     animation: none;
   }
 } 
+/* ===================================
+   GBPESA PREMIUM GREEN THEME
+   Muonekano mpya wa kisasa
+=================================== */
 
+:root {
+  --gb-green: #078447;
+  --gb-dark: #005b37;
+  --gb-light: #e9f8ef;
+  --gb-white: #ffffff;
+  --gb-text: #153b2c;
+  --gb-muted: #718579;
+  --gb-border: #dceee3;
+  --gb-shadow: 0 5px 20px rgba(0, 91, 55, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #f2f8f4 !important;
+  color: var(--gb-text);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Vichwa vya kurasa */
+h1, h2, h3, h4 {
+  color: var(--gb-dark);
+  font-weight: 750;
+  letter-spacing: -0.3px;
+}
+
+p {
+  line-height: 1.65;
+}
+
+/* Kadi zote */
+.card,
+.package,
+.transaction,
+.stat-card,
+.balance-card {
+  background: var(--gb-white);
+  border: 1px solid var(--gb-border);
+  border-radius: 18px;
+  box-shadow: var(--gb-shadow);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+/* Sehemu ya salio */
+.balance-card {
+  background: linear-gradient(135deg, #087c46, #00a45b) !important;
+  color: white !important;
+  border: none;
+  border-radius: 22px;
+  padding: 22px;
+}
+
+.balance-card h1,
+.balance-card h2,
+.balance-card h3,
+.balance-card p {
+  color: white !important;
+}
+
+/* Vitufe */
+button {
+  background: linear-gradient(135deg, #078447, #00a45b);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  min-height: 44px;
+  padding: 12px 17px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 9px rgba(0, 132, 71, 0.12);
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button.secondary {
+  background: white;
+  color: var(--gb-green);
+  border: 1px solid #9dd5b4;
+  box-shadow: none;
+}
+
+/* Sehemu za kuandika */
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: 45px;
+  padding: 12px;
+  border: 1px solid #d6e8dd;
+  border-radius: 12px;
+  background: #fbfefc;
+  color: var(--gb-text);
+  font: inherit;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--gb-green);
+  box-shadow: 0 0 0 3px rgba(7, 132, 71, 0.10);
+}
+
+/* Viungo */
+a {
+  color: var(--gb-green);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--gb-dark);
+}
+
+/* Mistari ya miamala */
+.transaction {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Lebo na taarifa ndogo */
+small,
+.muted {
+  color: var(--gb-muted);
+}
+
+/* Jedwali la admin */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th {
+  background: #e8f7ee;
+  color: var(--gb-dark);
+  text-align: left;
+}
+
+th, td {
+  padding: 11px 9px;
+  border-bottom: 1px solid #e8f1eb;
+}
+
+/* Menyu ya chini ikiwa ipo */
+.bottom-nav,
+.bottomNav,
+.bottom-navigation,
+nav.bottom-nav {
+  background: rgba(255, 255, 255, 0.97);
+  border-top: 1px solid var(--gb-border);
+  box-shadow: 0 -4px 18px rgba(0, 70, 40, 0.06);
+}
+
+/* Kwenye simu */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  .card,
+  .package,
+  .transaction {
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  button {
+    max-width: 100%;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 9px 6px;
+  }
+}
 </style>
 </head>
 
