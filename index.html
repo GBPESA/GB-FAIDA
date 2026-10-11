@@ -887,42 +887,51 @@ min-height: 43px;
 }
  }
 function openDashboardSection(sectionId) {
-const sectionIds = [
-"aboutUs",
-"referralCard",
-"buySection",
-"depositSection",
-"withdrawSection"
-];
+  const ids = [
+    "aboutUs",
+    "referralCard",
+    "buySection",
+    "depositSection",
+    "withdrawSection"
+  ];
 
-sectionIds.forEach(function(id) {
-const section = document.getElementById(id);
-if (section) section.classList.add("hidden");
-});
+  ids.forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add("hidden");
+  });
 
-const selected = document.getElementById(sectionId);
-if (selected) {
-selected.classList.remove("hidden");
-selected.scrollIntoView({ behavior: "smooth", block: "start" });
-}
+  const selected = document.getElementById(sectionId);
+
+  if (selected) {
+    selected.classList.remove("hidden");
+    selected.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  } else {
+    alert("Kipengele hakijapatikana: " + sectionId);
+  }
 }
 
 function closeDashboardSections() {
-[
-"aboutUs",
-"referralCard",
-"buySection",
-"depositSection",
-"withdrawSection"
-].forEach(function(id) {
-const section = document.getElementById(id);
-if (section) section.classList.add("hidden");
-});
+  [
+    "aboutUs",
+    "referralCard",
+    "buySection",
+    "depositSection",
+    "withdrawSection"
+  ].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add("hidden");
+  });
 
-const dashboard = document.getElementById("dashboardMenu");
-if (dashboard) {
-dashboard.scrollIntoView({ behavior: "smooth", block: "start" });
-}
+  const menu = document.getElementById("dashboardMenu");
+  if (menu) {
+    menu.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
  }
  
 </style>
