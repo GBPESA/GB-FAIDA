@@ -886,53 +886,6 @@ select {
 min-height: 43px;
 }
  }
-function openDashboardSection(sectionId) {
-  const ids = [
-    "aboutUs",
-    "referralCard",
-    "buySection",
-    "depositSection",
-    "withdrawSection"
-  ];
-
-  ids.forEach(function(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.add("hidden");
-  });
-
-  const selected = document.getElementById(sectionId);
-
-  if (selected) {
-    selected.classList.remove("hidden");
-    selected.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  } else {
-    alert("Kipengele hakijapatikana: " + sectionId);
-  }
-}
-
-function closeDashboardSections() {
-  [
-    "aboutUs",
-    "referralCard",
-    "buySection",
-    "depositSection",
-    "withdrawSection"
-  ].forEach(function(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.add("hidden");
-  });
-
-  const menu = document.getElementById("dashboardMenu");
-  if (menu) {
-    menu.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }
- }
  
 </style>
 </head>
@@ -2708,7 +2661,53 @@ async function shareReferralWhatsApp(){
     "noopener,noreferrer"
   );
 }
+function openDashboardSection(sectionId) {
+  const ids = [
+    "aboutUs",
+    "referralCard",
+    "buySection",
+    "depositSection",
+    "withdrawSection"
+  ];
 
+  ids.forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add("hidden");
+  });
+
+  const selected = document.getElementById(sectionId);
+
+  if (selected) {
+    selected.classList.remove("hidden");
+    selected.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  } else {
+    alert("Kipengele hakijapatikana: " + sectionId);
+  }
+}
+
+function closeDashboardSections() {
+  [
+    "aboutUs",
+    "referralCard",
+    "buySection",
+    "depositSection",
+    "withdrawSection"
+  ].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add("hidden");
+  });
+
+  const menu = document.getElementById("dashboardMenu");
+  if (menu) {
+    menu.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+        }
 </script>
 
 </body>
