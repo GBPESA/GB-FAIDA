@@ -331,7 +331,40 @@ footer{
 <small>Salio la GB</small>
 <strong id="gbBalance">0 GB</strong>
 </div>
+<div class="card" id="aboutUs">
+  <h3>ℹ️ KUHUSU GBPESA</h3>
 
+  <p>
+    Karibu GBPESA, mfumo unaolenga kurahisisha ununuzi na
+    uuzaji wa GB kwa bei nafuu.
+  </p>
+
+  <p>
+    <b>Dhamira yetu:</b> Kuwasaidia watumiaji kupata huduma
+    za GB kwa urahisi na kushiriki fursa za kupata zawadi
+    kupitia kuwaalika marafiki.
+  </p>
+
+  <p>
+    <b>Huduma zetu:</b>
+  </p>
+
+  <ul>
+    <li>Kununua na kuuza GB kupitia mfumo.</li>
+    <li>Kufuatilia salio na miamala yako.</li>
+    <li>Kuweka na kutoa fedha kulingana na taratibu za mfumo.</li>
+    <li>Kualika marafiki na kupata zawadi zinazostahili.</li>
+  </ul>
+
+  <p>
+    <b>Usalama:</b> Tunazingatia umuhimu wa usalama wa akaunti
+    na uthibitishaji wa miamala kabla ya salio kuongezwa.
+  </p>
+
+  <p>
+    Asante kwa kuchagua GBPESA!
+  </p>
+     </div>
 </div>
 </div>
 
@@ -450,7 +483,16 @@ footer{
 <strong id="walletGB">0 GB</strong>
 </div>
 </div>
+function openAboutUs() {
+  const about = document.getElementById("aboutUs");
 
+  if (about) {
+    about.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+}
 </div>
 
 <div class="card">
