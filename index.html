@@ -564,6 +564,167 @@ footer {
     font-size: 17px;
   }
  }
+
+/* ===== GBPESA MODERN FINTECH THEME ===== */
+:root {
+  --gb-green: #16c784;
+  --gb-green-dark: #087f50;
+  --gb-black: #07110d;
+  --gb-panel: #101c16;
+  --gb-white: #ffffff;
+  --gb-bg: #f2f6f3;
+  --gb-muted: #718078;
+  --gb-border: #e0e9e3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--gb-bg);
+  color: #15241b;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.gbpesa-brand {
+  background: linear-gradient(135deg, #07110d, #123c29);
+  color: var(--gb-white);
+  padding: 24px 18px;
+  border-bottom: 3px solid var(--gb-green);
+}
+
+.gbpesa-brand h1,
+.gbpesa-brand h2 {
+  color: var(--gb-green);
+  letter-spacing: 1px;
+}
+
+.app {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 16px;
+  background: var(--gb-bg);
+}
+
+.card,
+.balanceBox,
+#auth,
+#userApp,
+#adminApp {
+  border-radius: 18px;
+}
+
+.card {
+  background: var(--gb-white);
+  border: 1px solid var(--gb-border);
+  box-shadow: 0 5px 18px rgba(7, 35, 19, 0.045);
+  padding: 18px;
+  margin-bottom: 15px;
+}
+
+.balance {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.balanceBox {
+  min-width: 0;
+  padding: 18px 14px;
+  color: var(--gb-white);
+  background: linear-gradient(145deg, #07110d, #153b29);
+  border: 1px solid #244a36;
+  box-shadow: 0 7px 18px rgba(7, 17, 13, 0.12);
+}
+
+.balanceBox h2,
+.balanceBox h3,
+.balanceBox p {
+  color: var(--gb-white);
+  overflow-wrap: anywhere;
+}
+
+button,
+.btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 13px 16px;
+  min-height: 44px;
+  background: var(--gb-green);
+  color: #07110d;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+button:active,
+.btn:active {
+  transform: scale(0.98);
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  max-width: 100%;
+  min-height: 45px;
+  padding: 12px 13px;
+  margin: 6px 0 12px;
+  border: 1px solid #d5e1d9;
+  border-radius: 11px;
+  background: #fff;
+  color: #15241b;
+  font: inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid rgba(22, 199, 132, 0.28);
+  border-color: var(--gb-green-dark);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.3;
+}
+
+p {
+  line-height: 1.55;
+}
+
+a {
+  color: var(--gb-green-dark);
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 360px) {
+  .app {
+    padding: 10px;
+  }
+
+  .balance {
+    gap: 8px;
+  }
+
+  .balanceBox {
+    padding: 13px 10px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+}
+
 </style>
 </head>
 
