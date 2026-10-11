@@ -435,6 +435,135 @@ nav.bottom-nav {
     padding: 9px 6px;
   }
 }
+ /* GBPESA PREMIUM — FIXED TO MATCH EXISTING HTML */
+
+.app {
+  max-width: 480px;
+  background: #f7fbf8;
+  box-shadow: 0 0 35px rgba(0, 60, 35, .07);
+}
+
+.gbpesa-brand {
+  padding: 25px 15px 22px;
+  border-radius: 0 0 26px 26px;
+}
+
+.gbpesa-logo-mark {
+  background: rgba(255,255,255,.08);
+  box-shadow: 0 3px 12px rgba(0,0,0,.12);
+}
+
+header {
+  display: none;
+}
+
+main {
+  padding: 16px;
+}
+
+.card {
+  border: 1px solid #e2eee6;
+  border-radius: 20px;
+  box-shadow: 0 5px 18px rgba(0, 75, 42, .055);
+  padding: 18px;
+}
+
+.card h2,
+.card h3 {
+  color: #075c3a;
+}
+
+.balanceBox {
+  background: linear-gradient(145deg, #075b39, #0aa361);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 17px;
+  padding: 20px 10px;
+  box-shadow: 0 5px 12px rgba(0, 100, 55, .12);
+}
+
+.balanceBox strong {
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+
+.package {
+  background: #fbfefc;
+  border-color: #e0eee5;
+  border-radius: 15px;
+  padding: 15px;
+}
+
+.tx {
+  padding: 14px 2px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.nav {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.nav button {
+  min-height: 43px;
+  border-radius: 12px;
+  background: #e9f6ee;
+  color: #075c3a;
+  border: 1px solid #d8ecdf;
+}
+
+.nav button:focus,
+.nav button:hover {
+  background: #087f50;
+  color: white;
+}
+
+button {
+  border-radius: 13px;
+  background: linear-gradient(135deg, #087747, #0aa361);
+  box-shadow: 0 4px 10px rgba(0, 110, 60, .12);
+}
+
+button.secondary {
+  background: #e8f5ed;
+  color: #087747;
+  box-shadow: none;
+}
+
+input,
+select {
+  border-radius: 12px;
+  border-color: #d9e8df;
+  background: #fcfefc;
+}
+
+#aboutUs {
+  background: linear-gradient(145deg, #ffffff, #f0faf3);
+}
+
+#referralCard {
+  border-top: 3px solid #0a9a59;
+}
+
+footer {
+  background: #f1f8f3;
+  color: #648071;
+  border-top: 1px solid #e0eee5;
+}
+
+@media (max-width: 360px) {
+  main {
+    padding: 11px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .balanceBox strong {
+    font-size: 17px;
+  }
+ }
 </style>
 </head>
 
@@ -452,16 +581,11 @@ nav.bottom-nav {
   <div class="gbpesa-logo-mark">G</div>
   <h1 class="gbpesa-brand-name">GB<span>PESA</span></h1>
   <p class="gbpesa-brand-tagline">
-    NUNUA GB • UZA GB • PATA FAIDA
+    NUNUA NA KUUZA GB KWA BEI NAFUU ZAIDI NA KUPATA FAIDA 
   </p>
 </div>
 
 <div class="app">
-
-<header>
-<h1>GBPESA</h1>
-<p>NUNUA NA KUUZA GB KWA BEI NAFUU ZAIDI NA KUPATA FAIDA</p>
-</header>
 
 <main>
 
@@ -529,8 +653,8 @@ nav.bottom-nav {
 <div class="balanceBox">
 <small>Salio la GB</small>
 <strong id="gbBalance">0 GB</strong>
-</div>
-<div class="card" id="aboutUs">
+</div
+ <div class="card" id="aboutUs">
   <h3>ℹ️ KUHUSU GBPESA</h3>
 
   <p>
@@ -563,7 +687,7 @@ nav.bottom-nav {
   <p>
     Asante kwa kuchagua GBPESA!
   </p>
-     </div>
+ </div> 
 </div>
 </div>
 
@@ -682,16 +806,6 @@ nav.bottom-nav {
 <strong id="walletGB">0 GB</strong>
 </div>
 </div>
-function openAboutUs() {
-  const about = document.getElementById("aboutUs");
-
-  if (about) {
-    about.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }
-}
 </div>
 
 <div class="card">
@@ -2040,7 +2154,8 @@ async function loadNotifications(){
 }
 
 async function markNotificationRead(id){
-  const { data: { user } } = await supabase.auth.getUser();
+  const { error } = await supabaseClient
+    .from("notifications") 
   if(!user) return;
 
   const { error } = await supabase
@@ -2058,11 +2173,11 @@ async function markNotificationRead(id){
 }
 
 async function markAllNotificationsRead(){
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await supabaseClient.auth.getUser(); 
   if(!user) return;
 
-  const { error } = await supabase
-    .from("notifications")
+  const { error } = await supabaseClient
+    .from("notifications") 
     .update({ is_read: true })
     .eq("user_id", user.id)
     .eq("is_read", false);
