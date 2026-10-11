@@ -2174,12 +2174,14 @@ async function loadNotifications(){
   }
 }
 
-async function markNotificationRead(id){
-  const { error } = await supabaseClient
-    .from("notifications") 
-  if(!user) return;
 
-  const { error } = await supabase
+async function markNotificationRead(id){
+  const { data: { user }, error: userError } =
+    await supabaseClient.auth.getUser();
+
+  if(userError || !user) return;
+
+  const { error } = await supabaseClient
     .from("notifications")
     .update({ is_read: true })
     .eq("id", id)
@@ -2187,11 +2189,13 @@ async function markNotificationRead(id){
 
   if(error){
     alert("Imeshindikana kusoma arifa.");
+    console.error(error);
     return;
   }
 
-  loadNotifications();
+  await loadNotifications();
 }
+
 
 async function markAllNotificationsRead(){
   const { data: { user } } = await supabaseClient.auth.getUser(); 
