@@ -1274,6 +1274,30 @@ await loadAdminDeposits();
    ADMIN USERS
    ===================================================== */
 
+async function setUserActive(userId, active) {
+  const action = active ? "kuwezesha" : "kuzima";
+
+  if (!confirm(`Una uhakika unataka ${action} akaunti hii?`)) {
+    return;
+  }
+
+  const { data, error } = await supabaseClient.rpc(
+    "admin_set_user_active",
+    {
+      p_user_id: userId,
+      p_active: active
+    }
+  );
+
+  if (error) {
+    alert("Imeshindikana: " + error.message);
+    return;
+  }
+
+  alert(data || "Mabadiliko yamehifadhiwa.");
+  await loadAdminUsers();
+}
+
 async function loadAdminUsers(){
 
  const box=document.getElementById("adminUsers");
@@ -1295,25 +1319,26 @@ async function loadAdminUsers(){
    return;
  }
 
- box.innerHTML=data.map(u=>`
+ 
+box.innerHTML = data.map(u => `
+  <div class="adminItem">
+    <b>${escapeHTML(u.full_name || "User")}</b><br>
+    Email: ${escapeHTML(u.email || "-")}<br>
+    Simu: ${escapeHTML(u.phone || "-")}<br>
+    Role: ${escapeHTML(u.role || "user")}<br>
+    Salio: <b>${money(u.balance)}</b><br>
+    GB: <b>${Number(u.gb_balance || 0)} GB</b><br>
+    Hali: <b>${u.is_active === false ? "IMEZIMWA" : "INAENDELEA"}</b><br>
 
- <div class="adminItem">
-
- <b>${escapeHTML(u.full_name || "User")}</b><br>
-
- Email: ${escapeHTML(u.email || "-")}<br>
-
- Simu: ${escapeHTML(u.phone || "-")}<br>
-
- Role: ${escapeHTML(u.role || "user")}<br>
-
- Salio: <b>${money(u.balance)}</b><br>
-
- GB: <b>${Number(u.gb_balance || 0)} GB</b>
-
- </div>
-
- `).join("");
+    ${
+      u.role === "admin"
+        ? "<p>Akaunti ya Admin haiwezi kuzimwa hapa.</p>"
+        : u.is_active === false
+          ? `<button onclick="setUserActive('${u.id}', true)">WEZESHA USER</button>`
+          : `<button class="danger" onclick="setUserActive('${u.id}', false)">ZIMA USER</button>`
+    }
+  </div>
+`).join("");
 
 }
 
