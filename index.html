@@ -185,10 +185,106 @@ footer{
   color: #e4f7eb;
 }
 
+/* GBPESA WITHDRAWAL TICKER */
+.withdraw-ticker {
+  width: 100%;
+  overflow: hidden;
+  background: #063d2b;
+  color: #fff;
+  padding: 12px 0;
+  border-bottom: 2px solid #f4cf62;
+  white-space: nowrap;
+}
+
+.withdraw-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: gbpesaTicker 55s linear infinite;
+}
+
+.withdraw-ticker:hover .withdraw-ticker-track {
+  animation-play-state: paused;
+}
+
+.withdraw-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 24px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.withdraw-ticker-item .ticker-check {
+  color: #f4cf62;
+  font-size: 16px;
+}
+
+.withdraw-ticker-item .ticker-amount {
+  color: #f4cf62;
+  font-weight: 800;
+}
+
+@keyframes gbpesaTicker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .withdraw-ticker-track {
+    animation: none;
+  }
+}
+
+async function loadWithdrawalTicker() {
+  const track = document.getElementById("withdrawTickerTrack");
+  if (!track) return;
+
+  const { data, error } = await supabaseClient.rpc(
+    "get_public_withdrawal_ticker"
+  );
+
+  if (error || !Array.isArray(data) || data.length === 0) {
+    track.innerHTML = `
+      <div class="withdraw-ticker-item">
+        <span class="ticker-check">●</span>
+        GBPESA — Karibu kwenye mfumo wetu
+      </div>`;
+    return;
+  }
+
+  // Panga upya kwa random bila kubuni miamala.
+  const shuffled = [...data].sort(() => Math.random() - 0.5);
+
+  const items = shuffled.map(row => `
+    <div class="withdraw-ticker-item">
+      <span class="ticker-check">✓</span>
+      Ombi la kutoa pesa limeidhinishwa:
+      <span>${String(row.masked_phone || "Namba imefichwa")}</span>
+      <span class="ticker-amount">
+        TSh ${Number(row.amount).toLocaleString("en-TZ")}
+      </span>
+    </div>
+  `).join("");
+
+  // Rudia orodha kwa mwendo endelevu.
+  track.innerHTML = items + items;
+}
+
+loadWithdrawalTicker();
+
 </style>
 </head>
 
 <body>
+
+<div class="withdraw-ticker" id="withdrawTicker" aria-label="Taarifa za withdrawal zilizoidhinishwa">
+  <div class="withdraw-ticker-track" id="withdrawTickerTrack">
+    <div class="withdraw-ticker-item">
+      GBPESA — Inapakia taarifa za miamala iliyothibitishwa...
+    </div>
+  </div>
+</div>
 
 <div class="gbpesa-brand">
   <div class="gbpesa-logo-mark">G</div>
