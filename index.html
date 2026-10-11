@@ -234,44 +234,7 @@ footer{
   .withdraw-ticker-track {
     animation: none;
   }
-}
-
-async function loadWithdrawalTicker() {
-  const track = document.getElementById("withdrawTickerTrack");
-  if (!track) return;
-
-  const { data, error } = await supabaseClient.rpc(
-    "get_public_withdrawal_ticker"
-  );
-
-  if (error || !Array.isArray(data) || data.length === 0) {
-    track.innerHTML = `
-      <div class="withdraw-ticker-item">
-        <span class="ticker-check">●</span>
-        GBPESA — Karibu kwenye mfumo wetu
-      </div>`;
-    return;
-  }
-
-  // Panga upya kwa random bila kubuni miamala.
-  const shuffled = [...data].sort(() => Math.random() - 0.5);
-
-  const items = shuffled.map(row => `
-    <div class="withdraw-ticker-item">
-      <span class="ticker-check">✓</span>
-      Ombi la kutoa pesa limeidhinishwa:
-      <span>${String(row.masked_phone || "Namba imefichwa")}</span>
-      <span class="ticker-amount">
-        TSh ${Number(row.amount).toLocaleString("en-TZ")}
-      </span>
-    </div>
-  `).join("");
-
-  // Rudia orodha kwa mwendo endelevu.
-  track.innerHTML = items + items;
-}
-
-loadWithdrawalTicker();
+} 
 
 </style>
 </head>
@@ -1618,6 +1581,64 @@ supabaseClient.auth.onAuthStateChange(
  }
 
 })();
+
+async function loadWithdrawalTicker() {
+  const track = document.getElementById("withdrawTickerTrack");
+  if (!track) return;
+
+  track.textContent = "GBPESA — Inapakia taarifa...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "get_public_withdrawal_ticker"
+    );
+
+    if (error) throw error;
+
+    if (!Array.isArray(data) || data.length === 0) {
+      track.textContent = "GBPESA — Karibu kwenye mfumo wetu";
+      return;
+    }
+
+    const items = data.map(row => {
+      const item = document.createElement("div");
+      item.className = "withdraw-ticker-item";
+
+      const check = document.createElement("span");
+      check.className = "ticker-check";
+      check.textContent = "✓";
+
+      const description = document.createElement("span");
+      description.textContent =
+        "Ombi la kutoa pesa limeidhinishwa:";
+
+      const phone = document.createElement("span");
+      phone.textContent = row.masked_phone || "Namba imefichwa";
+
+      const amount = document.createElement("span");
+      amount.className = "ticker-amount";
+      amount.textContent =
+        "TSh " + Number(row.amount).toLocaleString("en-TZ");
+
+      item.append(check, description, phone, amount);
+      return item;
+    });
+
+    track.replaceChildren();
+
+    // Nakili taarifa ili ticker iendelee kuzunguka.
+    [...items, ...items].forEach(item => {
+      track.appendChild(item.cloneNode(true));
+    });
+
+  } catch (error) {
+    console.error("Withdrawal ticker error:", error);
+    track.textContent =
+      "GBPESA — Taarifa za withdrawals hazijapatikana.";
+  }
+}
+
+loadWithdrawalTicker();
 
 </script>
 
