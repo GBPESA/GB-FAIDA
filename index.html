@@ -886,7 +886,44 @@ select {
 min-height: 43px;
 }
  }
+function openDashboardSection(sectionId) {
+const sectionIds = [
+"aboutUs",
+"referralCard",
+"buySection",
+"depositSection",
+"withdrawSection"
+];
 
+sectionIds.forEach(function(id) {
+const section = document.getElementById(id);
+if (section) section.classList.add("hidden");
+});
+
+const selected = document.getElementById(sectionId);
+if (selected) {
+selected.classList.remove("hidden");
+selected.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+}
+
+function closeDashboardSections() {
+[
+"aboutUs",
+"referralCard",
+"buySection",
+"depositSection",
+"withdrawSection"
+].forEach(function(id) {
+const section = document.getElementById(id);
+if (section) section.classList.add("hidden");
+});
+
+const dashboard = document.getElementById("dashboardMenu");
+if (dashboard) {
+dashboard.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+ }
  
 </style>
 </head>
@@ -962,155 +999,75 @@ min-height: 43px;
 
 
 <!-- HOME -->
-<div id="homePage">
-
-<div class="card">
-<h2>Karibu GBPESA</h2>
-
-<div class="balance">
-
-<div class="balanceBox">
-<small>Salio la Pesa</small>
-<strong id="moneyBalance">TSh 0</strong>
-</div>
-
-<div class="balanceBox">
-<small>Salio la GB</small>
-<strong id="gbBalance">0 GB</strong>
-</div
- <div class="card" id="aboutUs">
-  <h3>ℹ️ KUHUSU GBPESA</h3>
-
-  <p>
-    Karibu GBPESA, mfumo unaolenga kurahisisha ununuzi na
-    uuzaji wa GB kwa bei nafuu.
-  </p>
-
-  <p>
-    <b>Dhamira yetu:</b> Kuwasaidia watumiaji kupata huduma
-    za GB kwa urahisi na kushiriki fursa za kupata zawadi
-    kupitia kuwaalika marafiki.
-  </p>
-
-  <p>
-    <b>Huduma zetu:</b>
-  </p>
-
-  <ul>
-    <li>Kununua na kuuza GB kupitia mfumo.</li>
-    <li>Kufuatilia salio na miamala yako.</li>
-    <li>Kuweka na kutoa fedha kulingana na taratibu za mfumo.</li>
-    <li>Kualika marafiki na kupata zawadi zinazostahili.</li>
-  </ul>
-
-  <p>
-    <b>Usalama:</b> Tunazingatia umuhimu wa usalama wa akaunti
-    na uthibitishaji wa miamala kabla ya salio kuongezwa.
-  </p>
-
-  <p>
-    Asante kwa kuchagua GBPESA!
-  </p>
- </div> 
-</div>
-</div>
-
-
-<div class="card" id="referralCard">
-  <h3>🎁 KUALIKA MARAFIKI</h3>
-  <p>Alika rafiki ajiunge na GBPESA kupitia link yako.</p>
-  <p><b>Zawadi ya kujiunga:</b> GB 1 kwa kila rafiki.</p>
-  <p><b>Zawadi ya deposit:</b> TSh 500 rafiki akiweka depositi ya TSh 10,000 au zaidi na ikaidhinishwa.</p>
-
-  <label for="referralLink">Link yako ya mwaliko</label>
-  <input id="referralLink" type="text" readonly placeholder="Inapakia link yako...">
-
-  <button onclick="copyReferralLink()">NAKILI LINK</button>
-  <button onclick="shareReferralWhatsApp()">TUMA KWA WHATSAPP</button>
-  <button class="secondary" onclick="loadReferralInfo()">SASISHA TAKWIMU</button>
-
-  <div class="package">
-    <b>Marafiki waliojiunga</b>
-    <p id="referralCount">0</p>
+<div id="homePage">  <div class="card">
+    <h2>Karibu GBPESA</h2><div class="balance">
+  <div class="balanceBox">
+    <small>Salio la Pesa</small>
+    <strong id="moneyBalance">TSh 0</strong>
   </div>
 
-  <div class="package">
-    <b>Jumla ya zawadi za GB</b>
-    <p id="referralGbTotal">0 GB</p>
-  </div>
-
-  <div class="package">
-    <b>Zawadi za depositi</b>
-    <p id="referralCashTotal">TSh 0</p>
-  </div>
-
-  <div id="referralMsg"></div>
-</div>
-
-<div class="card">
-<h3>Nunua GB</h3>
- 
-<div class="package">
-  <div class="row">
-    <div>
-      <b>GB 1</b><br>
-      <span id="homeGb1Price">TSh 1,000</span>
-    </div>
-    <button onclick="buyGB(1)">NUNUA</button>
+  <div class="balanceBox">
+    <small>Salio la GB</small>
+    <strong id="gbBalance">0 GB</strong>
   </div>
 </div>
 
-
-<div class="package">
-<div class="row">
-<div>
-<b>GB 5</b><br>
- <span id="homeGb5Price">TSh 4,500</span> 
-</div>
-<button onclick="buyGB(5)">NUNUA</button>
-</div>
+  </div>  <div class="card" id="dashboardMenu">
+    <h3>Huduma za GBPESA</h3><div class="dashboard-grid">
+  <button onclick="openDashboardSection('buySection')">📶 Nunua GB</button>
+  <button onclick="openDashboardSection('depositSection')">💰 Weka Pesa</button>
+  <button onclick="openDashboardSection('withdrawSection')">🏧 Toa Pesa</button>
+  <button onclick="openDashboardSection('referralCard')">🎁 Alika Marafiki</button>
+  <button onclick="openDashboardSection('aboutUs')">ℹ️ Kuhusu GBPESA</button>
 </div>
 
-<div class="package">
-<div class="row">
-<div>
-<b>GB 10</b><br>
-<span id="homeGb10Price">TSh 8,000</span> 
-</div>
-<button onclick="buyGB(10)">NUNUA</button>
-</div>
-</div>
+  </div>  <div class="card dashboard-section hidden" id="aboutUs">
+    <h3>ℹ️ Kuhusu GBPESA</h3>
+    <p>Karibu GBPESA, mfumo unaolenga kurahisisha ununuzi na uuzaji wa GB kwa bei nafuu.</p>
+    <p><b>Dhamira yetu:</b> Kuwasaidia watumiaji kupata huduma za GB kwa urahisi na kushiriki fursa za zawadi kupitia kuwaalika marafiki.</p>
+    <p><b>Huduma zetu:</b> Kununua na kuuza GB, kufuatilia salio na miamala, kuweka na kutoa fedha kulingana na taratibu za mfumo, na kualika marafiki.</p>
+    <p><b>Usalama:</b> Miamala inahitaji uthibitishaji unaostahili kabla ya salio kuongezwa.</p>
+    <button class="secondary" onclick="closeDashboardSections()">RUDI DASHBOARD</button>
+  </div>  <div class="card dashboard-section hidden" id="referralCard">
+    <h3>🎁 Kualika Marafiki</h3>
+    <p>Zawadi ya kujiunga: GB 1 kwa kila rafiki.</p>
+    <p>Zawadi ya deposit: TSh 500 rafiki akiweka TSh 10,000 au zaidi na malipo kuthibitishwa.</p><label for="referralLink">Link yako ya mwaliko</label>
+<input id="referralLink" type="text" readonly placeholder="Inapakia link yako...">
+
+<button onclick="copyReferralLink()">NAKILI LINK</button>
+<button onclick="shareReferralWhatsApp()">TUMA KWA WHATSAPP</button>
+<button class="secondary" onclick="loadReferralInfo()">SASISHA TAKWIMU</button>
+
+<div class="package"><b>Marafiki waliojiunga</b><p id="referralCount">0</p></div>
+<div class="package"><b>Jumla ya zawadi za GB</b><p id="referralGbTotal">0 GB</p></div>
+<div class="package"><b>Zawadi za depositi</b><p id="referralCashTotal">TSh 0</p></div>
+<div id="referralMsg"></div>
+<button class="secondary" onclick="closeDashboardSections()">RUDI DASHBOARD</button>
+
+  </div>  <div class="card dashboard-section hidden" id="buySection">
+    <h3>📶 Nunua GB</h3><div class="package"><div class="row"><div><b>GB 1</b><br><span id="homeGb1Price">TSh 1,000</span></div><button onclick="buyGB(1)">NUNUA</button></div></div>
+<div class="package"><div class="row"><div><b>GB 5</b><br><span id="homeGb5Price">TSh 4,500</span></div><button onclick="buyGB(5)">NUNUA</button></div></div>
+<div class="package"><div class="row"><div><b>GB 10</b><br><span id="homeGb10Price">TSh 8,000</span></div><button onclick="buyGB(10)">NUNUA</button></div></div>
 
 <div id="buyMsg"></div>
-</div>
+<button class="secondary" onclick="closeDashboardSections()">RUDI DASHBOARD</button>
 
-
-<div class="card">
-<h3>Deposit</h3>
-<p style="font-weight:bold;color:green;">
-  LIPA KWA NAMBA: 0702715377
-</p>
-<p>Baada ya kulipa, hifadhi namba ya muamala ili uthibitishwe na ADMIN.</p>
-<input id="depositAmount" type="number" min="100" placeholder="Kiasi TSh">
-
-<button onclick="deposit()">WEKA PESA</button>
-
-<div id="depositMsg"></div>
-</div>
-
-
-<div class="card">
-<h3>Withdrawal</h3>
-
-<input id="withdrawPhone" placeholder="Namba ya simu">
-<input id="withdrawAmount" type="number" min="100" placeholder="Kiasi TSh">
-
-<button onclick="withdraw()">OMBA WITHDRAWAL</button>
-
-<div id="withdrawMsg"></div>
-</div>
-
-</div>
+  </div>  <div class="card dashboard-section hidden" id="depositSection">
+    <h3>💰 Weka Pesa</h3>
+    <p style="font-weight:bold;color:green;">LIPA KWA NAMBA: 0702715377</p>
+    <p>Baada ya kulipa, hifadhi namba ya muamala ili uthibitishwe na ADMIN.</p>
+    <input id="depositAmount" type="number" min="100" placeholder="Kiasi TSh">
+    <button onclick="deposit()">WEKA PESA</button>
+    <div id="depositMsg"></div>
+    <button class="secondary" onclick="closeDashboardSections()">RUDI DASHBOARD</button>
+  </div>  <div class="card dashboard-section hidden" id="withdrawSection">
+    <h3>🏧 Toa Pesa</h3>
+    <input id="withdrawPhone" placeholder="Namba ya simu">
+    <input id="withdrawAmount" type="number" min="100" placeholder="Kiasi TSh">
+    <button onclick="withdraw()">OMBA WITHDRAWAL</button>
+    <div id="withdrawMsg"></div>
+    <button class="secondary" onclick="closeDashboardSections()">RUDI DASHBOARD</button>
+  </div></div>
 
 
 <!-- WALLET -->
