@@ -724,7 +724,170 @@ a {
     padding: 14px;
   }
 }
+/* GBPESA — MODERN FINTECH THEME */
+:root {
+--gb-green: #00a86b;
+--gb-dark: #07140f;
+--gb-card: #10231a;
+--gb-text: #eaf7ef;
+--gb-muted: #a6b9ad;
+}
 
+body {
+background: #07140f;
+color: var(--gb-text);
+}
+
+.app {
+background: #091710;
+color: var(--gb-text);
+}
+
+.gbpesa-brand {
+background: linear-gradient(135deg, #06110c, #06452e, #00a86b);
+border: 1px solid #176c49;
+border-radius: 0 0 22px 22px;
+box-shadow: 0 8px 25px #0005;
+}
+
+.gbpesa-logo-mark {
+background: linear-gradient(135deg, #00d68a, #087447);
+color: #fff;
+border-radius: 14px;
+box-shadow: 0 4px 15px #00a86b44;
+}
+
+.card,
+.package,
+.adminItem,
+#aboutUs,
+#referralCard {
+background: #10231a;
+color: #eaf7ef;
+border: 1px solid #234534;
+border-radius: 17px;
+box-shadow: 0 5px 18px #0002;
+}
+
+h2, h3, label, strong {
+color: #f0fff5;
+}
+
+p, small, .muted {
+color: #a6b9ad;
+}
+
+input,
+select,
+textarea {
+background: #091710;
+color: #f0fff5;
+border: 1px solid #315542;
+border-radius: 11px;
+}
+
+input::placeholder,
+textarea::placeholder {
+color: #82988a;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+outline: 2px solid #00a86b;
+border-color: #00a86b;
+}
+
+button {
+background: linear-gradient(135deg, #00b875, #087447);
+color: #fff;
+border: 0;
+border-radius: 11px;
+font-weight: 700;
+box-shadow: 0 4px 12px #00a86b22;
+}
+
+button:active {
+transform: scale(.98);
+}
+
+.balanceBox {
+background: linear-gradient(145deg, #075b3c, #00a86b);
+color: #fff;
+border: 1px solid #32c98c;
+border-radius: 16px;
+}
+
+.balanceBox strong,
+.balanceBox span,
+.balanceBox p {
+color: #fff;
+}
+
+.nav {
+background: #10231a;
+border: 1px solid #234534;
+border-radius: 15px;
+padding: 8px;
+gap: 7px;
+}
+
+.nav button {
+background: #193728;
+color: #cde8d7;
+box-shadow: none;
+}
+
+.nav button:hover,
+.nav button:focus {
+background: #00a86b;
+color: #fff;
+}
+
+.tx,
+.transaction,
+table,
+th,
+td {
+color: #eaf7ef;
+border-color: #315542;
+}
+
+footer {
+color: #a6b9ad;
+}
+
+.message {
+border-radius: 10px;
+}
+
+.error {
+color: #ff9b9b;
+}
+
+.withdraw-ticker {
+background: #0d2419;
+color: #d7f8e4;
+border-color: #24553b;
+}
+
+@media (max-width: 480px) {
+.card {
+padding: 16px;
+margin-bottom: 14px;
+}
+
+button {
+min-height: 43px;
+}
+
+input,
+select {
+min-height: 43px;
+}
+ }
+
+ 
 </style>
 </head>
 
