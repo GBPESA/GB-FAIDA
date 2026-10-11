@@ -1103,10 +1103,16 @@ async function login(){
 
 async function startApp(){
 
- const {data:{user}}=
- await supabaseClient.auth.getUser();
+ const { data: { user }, error: userError } =
+   await supabaseClient.auth.getUser();
 
- if(!user)return;
+ if(userError || !user){
+   document.getElementById("auth").classList.remove("hidden");
+   document.getElementById("userApp").classList.add("hidden");
+   document.getElementById("adminApp").classList.add("hidden");
+   return;
+ }
+
 
  const {data:profile,error}=await supabaseClient
    .from("profiles")
