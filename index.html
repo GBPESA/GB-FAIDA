@@ -1975,15 +1975,21 @@ function escapeHTML(value){
    AUTH SESSION
    ===================================================== */
 
-supabaseClient.auth.onAuthStateChange(
- async (event,session)=>{
 
-   if(session){
-     setTimeout(startApp,0);
-   }
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_IN" && session) {
+    setTimeout(() => {
+      startApp();
+    }, 0);
+  }
 
- }
-);
+  if (event === "SIGNED_OUT") {
+    document.getElementById("auth").classList.remove("hidden");
+    document.getElementById("userApp").classList.add("hidden");
+    document.getElementById("adminApp").classList.add("hidden");
+  }
+});
+
 
 
  
