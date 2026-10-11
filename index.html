@@ -336,6 +336,37 @@ footer{
 </div>
 
 
+<div class="card" id="referralCard">
+  <h3>🎁 KUALIKA MARAFIKI</h3>
+  <p>Alika rafiki ajiunge na GBPESA kupitia link yako.</p>
+  <p><b>Zawadi ya kujiunga:</b> GB 1 kwa kila rafiki.</p>
+  <p><b>Zawadi ya deposit:</b> TSh 500 rafiki akiweka depositi ya TSh 10,000 au zaidi na ikaidhinishwa.</p>
+
+  <label for="referralLink">Link yako ya mwaliko</label>
+  <input id="referralLink" type="text" readonly placeholder="Inapakia link yako...">
+
+  <button onclick="copyReferralLink()">NAKILI LINK</button>
+  <button onclick="shareReferralWhatsApp()">TUMA KWA WHATSAPP</button>
+  <button class="secondary" onclick="loadReferralInfo()">SASISHA TAKWIMU</button>
+
+  <div class="package">
+    <b>Marafiki waliojiunga</b>
+    <p id="referralCount">0</p>
+  </div>
+
+  <div class="package">
+    <b>Jumla ya zawadi za GB</b>
+    <p id="referralGbTotal">0 GB</p>
+  </div>
+
+  <div class="package">
+    <b>Zawadi za depositi</b>
+    <p id="referralCashTotal">TSh 0</p>
+  </div>
+
+  <div id="referralMsg"></div>
+</div>
+
 <div class="card">
 <h3>Nunua GB</h3>
  
@@ -660,11 +691,13 @@ async function register(){
    email,
    password,
    options:{
-     data:{
-       full_name:name,
-       phone:phone
-     }
-   }
+  data:{
+    full_name:name,
+    phone:phone,
+    referral_code:
+      new URLSearchParams(window.location.search).get("ref") || null
+  }
+                         } 
  });
 
  if(error){
@@ -1917,6 +1950,91 @@ async function loadPublicPrices() {
 
   document.getElementById("homeGb10Price").textContent =
     money(data.gb10_price);
+}
+
+async function loadReferralInfo(){
+  const { data: { user }, error: userError } =
+    await supabaseClient.auth.getUser();
+
+  if(userError || !user){
+    msg("referralMsg","Tafadhali ingia kwanza.",true);
+    return;
+  }
+
+  const { data: profile, error: profileError } =
+    await supabaseClient
+      .from("profiles")
+      .select("referral_code")
+      .eq("id",user.id)
+      .single();
+
+  if(profileError || !profile?.referral_code){
+    msg("referralMsg","Imeshindikana kupata referral code.",true);
+    return;
+  }
+
+  const link =
+    window.location.origin +
+    window.location.pathname +
+    "?ref=" + encodeURIComponent(profile.referral_code);
+
+  document.getElementById("referralLink").value = link;
+
+  const { data, error } = await supabaseClient.rpc(
+    "get_my_referral_summary"
+  );
+
+  if(error){
+    msg("referralMsg","Imeshindikana kupakia takwimu: "+error.message,true);
+    return;
+  }
+
+  document.getElementById("referralCount").textContent =
+    Number(data.referrals_count || 0);
+
+  document.getElementById("referralGbTotal").textContent =
+    Number(data.gb_reward_total || 0) + " GB";
+
+  document.getElementById("referralCashTotal").textContent =
+    money(data.cash_reward_total || 0);
+
+  msg("referralMsg","Takwimu zimepakiwa.");
+}
+
+async function copyReferralLink(){
+  const link = document.getElementById("referralLink").value;
+
+  if(!link){
+    await loadReferralInfo();
+    return;
+  }
+
+  try{
+    await navigator.clipboard.writeText(link);
+    msg("referralMsg","Link imenakiliwa. Itume kwa marafiki zako.");
+  }catch(error){
+    window.prompt("Nakili link yako hapa:",link);
+  }
+}
+
+async function shareReferralWhatsApp(){
+  let link = document.getElementById("referralLink").value;
+
+  if(!link){
+    await loadReferralInfo();
+    link = document.getElementById("referralLink").value;
+  }
+
+  if(!link) return;
+
+  const message =
+    "Karibu GBPESA! Jiunge kupitia link yangu: " + link;
+
+  window.open(
+    "https://wa.me/?text=" + encodeURIComponent(message),
+    "_blank",
+    "noopener,noreferrer"
+  );
 }
 
 </script>
