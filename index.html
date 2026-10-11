@@ -1108,8 +1108,6 @@ async function startApp(){
 
  if(!user)return;
 
- document.getElementById("auth").classList.add("hidden");
-
  const {data:profile,error}=await supabaseClient
    .from("profiles")
    .select("*")
@@ -1120,6 +1118,7 @@ async function startApp(){
    console.error(error);
    return;
  }
+ document.getElementById("auth").classList.add("hidden");
 loadPublicPrices();
  document.getElementById("profileName").textContent=
    profile.full_name || "-";
