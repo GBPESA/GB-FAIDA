@@ -808,64 +808,95 @@ async function deposit() {
    WITHDRAW
    ===================================================== */
 
-async function withdraw(){
 
- const phone=document
-   .getElementById("withdrawPhone")
-   .value.trim();
+async function withdraw() {
+  const phone = document
+    .getElementById("withdrawPhone")
+    .value.trim();
 
- const amount=Number(
-   document.getElementById("withdrawAmount").value
- );
+  const amount = Number(
+    document.getElementById("withdrawAmount").value
+  );
 
- if(!phone || !amount){
-   msg(
-     "withdrawMsg",
-     "Weka namba ya simu na kiasi.",
-     true
-   );
-   return;
- }
+  if (!phone || !Number.isFinite(amount) || amount <= 0) {
+    msg(
+      "withdrawMsg",
+      "Weka namba ya simu na kiasi sahihi.",
+      true
+    );
+    return;
+  }
 
- if(amount < 100){
-   msg(
-     "withdrawMsg",
-     "Kiasi cha chini ni TSh 100.",
-     true
-   );
-   return;
- }
+  const { data: settings, error: settingsError } =
+    await supabaseClient
+      .from("app_settings")
+      .select("min_withdrawal")
+      .eq("id", 1)
+      .single();
 
- msg("withdrawMsg","Inashughulikia...");
+  if (settingsError || !settings) {
+    console.error(settingsError);
+    msg(
+      "withdrawMsg",
+      "Imeshindikana kupata kiwango cha chini cha withdrawal.",
+      true
+    );
+    return;
+  }
 
- const {data,error}=await supabaseClient
-   .rpc(
-     "request_withdrawal",
-     {
-       p_amount:amount,
-       p_phone:phone,
-       p_provider:"mobile_money"
-     }
-   );
+  const minWithdrawal = Number(settings.min_withdrawal);
 
- if(error){
-   msg("withdrawMsg",error.message,true);
-   return;
- }
+  if (
+    !Number.isFinite(minWithdrawal) ||
+    minWithdrawal <= 0
+  ) {
+    msg(
+      "withdrawMsg",
+      "Kiwango cha chini cha withdrawal hakijawekwa vizuri.",
+      true
+    );
+    return;
+  }
 
- msg(
-   "withdrawMsg",
-   "Withdrawal request imetumwa kwa admin."
- );
+  if (amount < minWithdrawal) {
+    msg(
+      "withdrawMsg",
+      "Kiasi cha chini ni TSh " +
+      minWithdrawal.toLocaleString() + ".",
+      true
+    );
+    return;
+  }
 
- document.getElementById("withdrawPhone").value="";
- document.getElementById("withdrawAmount").value="";
+  msg("withdrawMsg", "Inashughulikia...");
 
- await loadWallet();
- await loadWithdrawals();
- await loadTransactions();
+  const { data, error } = await supabaseClient.rpc(
+    "request_withdrawal",
+    {
+      p_amount: amount,
+      p_phone: phone,
+      p_provider: "mobile_money"
+    }
+  );
 
+  if (error) {
+    msg("withdrawMsg", error.message, true);
+    return;
+  }
+
+  msg(
+    "withdrawMsg",
+    "Ombi la withdrawal limetumwa kwa admin."
+  );
+
+  document.getElementById("withdrawPhone").value = "";
+  document.getElementById("withdrawAmount").value = "";
+
+  await loadWallet();
+  await loadWithdrawals();
+  await loadTransactions();
 }
+
 
 
 /* =====================================================
@@ -1045,7 +1076,7 @@ async function loadMarketplace(){
         Jumla: <b>${money(Number(x.gb_amount)*Number(x.price_per_gb))}</b><br>
         Hali: ${escapeHTML(x.status)}
         <button class="danger" onclick="cancelListing('${x.id}')">
-          GHARAGHA TANGAZO
+          GHAIRI TANGAZO
         </button>
       </div>
     `).join("");
