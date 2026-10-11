@@ -1980,20 +1980,30 @@ supabaseClient.auth.onAuthStateChange(
 );
 
 
+ 
 /* =====================================================
    INITIAL LOAD
    ===================================================== */
 
-(async()=>{
+(async () => {
+  const { data: { session }, error } =
+    await supabaseClient.auth.getSession();
 
- const {data:{session}}=
- await supabaseClient.auth.getSession();
+  if (error) {
+    console.error("Session error:", error);
+    document.getElementById("auth").classList.remove("hidden");
+    return;
+  }
 
- if(session){
-   await startApp();
- }
-
+  if (session) {
+    await startApp();
+  } else {
+    document.getElementById("auth").classList.remove("hidden");
+    document.getElementById("userApp").classList.add("hidden");
+    document.getElementById("adminApp").classList.add("hidden");
+  }
 })();
+
 
 async function loadWithdrawalTicker() {
   const track = document.getElementById("withdrawTickerTrack");
