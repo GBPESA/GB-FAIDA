@@ -1081,7 +1081,61 @@ async function copyGBGiftCode() {
       "Nakili msimbo huu mwenyewe: " + code;
   }
 }
+async function claimGBGiftCode() {
+  const input = document.getElementById("userGiftCode");
+  const msg = document.getElementById("userGiftCodeMsg");
+  const button = document.querySelector(
+    '#userGiftCodeSection button'
+  );
 
+  const code = input.value.trim().toUpperCase();
+
+  msg.textContent = "";
+
+  if (!code) {
+    msg.textContent = "Tafadhali weka msimbo wa zawadi.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "INAKAGUA MSIMBO...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "claim_gb_gift_code",
+      { p_code: code }
+    );
+
+    if (error) {
+      msg.textContent = "Imeshindikana: " + error.message;
+      return;
+    }
+
+    if (!data || !data.success) {
+      msg.textContent = "Zawadi haijapatikana. Jaribu tena.";
+      return;
+    }
+
+    msg.textContent =
+      "Hongera! Umepokea " + data.gb_awarded +
+      " GB kwenye wallet yako. 🎉";
+
+    input.value = "";
+
+    // Sasisha taarifa za akaunti ikiwa function hii ipo
+    if (typeof loadDashboard === "function") {
+      await loadDashboard();
+    } else if (typeof loadWallet === "function") {
+      await loadWallet();
+    }
+
+  } catch (err) {
+    msg.textContent = "Hitilafu imetokea. Jaribu tena.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "DAI ZAWADI YANGU";
+  }
+ }
 </style>
 </head>
 
@@ -1225,7 +1279,26 @@ async function copyGBGiftCode() {
     <div id="withdrawMsg"></div>
     <button class="secondary" onclick="closeDashboardSections()">RUDI DASHBOARD</button>
   </div></div>
+<!-- USER: GB GIFT REWARD -->
+<div class="card" id="userGiftCodeSection">
+  <h3>🎁 DAI ZAWADI YA GB</h3>
+  <p>Una msimbo wa zawadi? Weka hapa upate GB zako.</p>
 
+  <label for="userGiftCode">Msimbo wa zawadi</label>
+  <input
+    id="userGiftCode"
+    type="text"
+    placeholder="Mfano: GB-ABC1234567"
+    autocomplete="off"
+    style="text-transform:uppercase"
+  >
+
+  <button type="button" onclick="claimGBGiftCode()">
+    DAI ZAWADI YANGU
+  </button>
+
+  <div id="userGiftCodeMsg" class="message"></div>
+</div>
 
 <!-- WALLET -->
 <div id="walletPage" class="hidden">
