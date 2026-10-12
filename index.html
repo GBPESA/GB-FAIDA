@@ -1559,6 +1559,34 @@ async function createGBGiftCode() {
 </div>
  </div> 
 
+<div class="card" id="adminGiftCodes">
+  <h3>🎁 MISIMBO YA ZAWADI ZA GB</h3>
+  <p>Tengeneza msimbo wa zawadi kwa watumiaji. Msimbo utaisha baada ya dakika 2.</p>
+
+  <label for="giftGbAmount">Kiasi cha zawadi (GB)</label>
+  <input
+    id="giftGbAmount"
+    type="number"
+    min="0.1"
+    step="0.1"
+    placeholder="Mfano: 3"
+  >
+
+  <button type="button" onclick="createGBGiftCode()">
+    TENGENEZA MSIMBO
+  </button>
+
+  <div id="giftCodeAdminMsg" class="message"></div>
+
+  <div id="giftCodeResult" class="package hidden">
+    <p>Msimbo wa zawadi:</p>
+    <h2 id="giftCodeText"></h2>
+    <p>Thamani: <strong id="giftCodeGB"></strong></p>
+    <p>Muda uliobaki: <strong id="giftCodeTimer">120</strong> sekunde</p>
+    <button type="button" onclick="copyGBGiftCode()">NAKILI MSIMBO</button>
+  </div>
+</div>
+
 <div class="card">
 <h3>⚙️ SETTINGS ZA GBPESA</h3>
 
