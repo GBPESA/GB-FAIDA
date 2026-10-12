@@ -1087,15 +1087,20 @@ async function copyGBGiftCode() {
       "Nakili msimbo huu mwenyewe: " + code;
   }
 }
+
 async function claimGBGiftCode() {
   const input = document.getElementById("userGiftCode");
   const msg = document.getElementById("userGiftCodeMsg");
   const button = document.querySelector(
-    '#userGiftCodeSection button'
+    '#userGiftCodeSection button[onclick="claimGBGiftCode()"]'
   );
 
-  const code = input.value.trim().toUpperCase();
+  if (!input || !msg) {
+    alert("Sehemu ya kudai zawadi haijapatikana.");
+    return;
+  }
 
+  const code = input.value.trim().toUpperCase();
   msg.textContent = "";
 
   if (!code) {
@@ -1103,8 +1108,19 @@ async function claimGBGiftCode() {
     return;
   }
 
-  button.disabled = true;
-  button.textContent = "INAKAGUA MSIMBO...";
+  if (
+    typeof supabaseClient === "undefined" ||
+    !supabaseClient ||
+    typeof supabaseClient.rpc !== "function"
+  ) {
+    msg.textContent = "Muunganiko wa Supabase haujapatikana.";
+    return;
+  }
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "INAKAGUA MSIMBO...";
+  }
 
   try {
     const { data, error } = await supabaseClient.rpc(
@@ -1113,29 +1129,41 @@ async function claimGBGiftCode() {
     );
 
     if (error) {
-      msg.textContent = "Imeshindikana: " + error.message;
+      console.error("Claim GB gift error:", error);
+      msg.textContent = "Kosa: " + error.message;
       return;
     }
 
     if (!data || !data.success) {
-      msg.textContent = "Zawadi haijapatikana. Jaribu tena.";
+      msg.textContent =
+        "Zawadi haijathibitishwa: " + JSON.stringify(data);
       return;
     }
 
     msg.textContent =
       "Hongera! Umepokea " + data.gb_awarded +
-      " GB kwenye wallet yako. 🎉";
+      " GB kwenye wallet yako! 🎉";
 
     input.value = "";
 
-    // Sasisha taarifa za akaunti ikiwa function hii ipo
     if (typeof loadDashboard === "function") {
       await loadDashboard();
     } else if (typeof loadWallet === "function") {
       await loadWallet();
     }
 
-  
+  } catch (err) {
+    console.error("Claim GB gift exception:", err);
+    msg.textContent =
+      "Hitilafu: " + (err.message || String(err));
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "DAI ZAWADI YANGU";
+    }
+  }
+}
+
 } catch (err) {
   console.error("Claim GB gift error:", err);
   msg.textContent =
@@ -1561,7 +1589,7 @@ async function createGBGiftCode() {
 
 <div class="card" id="adminGiftCodes">
   <h3>🎁 MISIMBO YA ZAWADI ZA GB</h3>
-  <p>Tengeneza msimbo wa zawadi kwa watumiaji. Msimbo utaisha baada ya dakika 2.</p>
+  <p>Tengeneza msimbo wa zawadi kwa watumiaji. Msimbo utaisha baada ya dakika 3.</p>
 
   <label for="giftGbAmount">Kiasi cha zawadi (GB)</label>
   <input
