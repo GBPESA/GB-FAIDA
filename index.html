@@ -1445,34 +1445,6 @@ async function claimGBGiftCode() {
 </div>
  </div> 
 
-<div class="card" id="adminGiftCodes">
-  <h3>🎁 MISIMBO YA ZAWADI ZA GB</h3>
-  <p>Tengeneza msimbo wa zawadi kwa watumiaji. Msimbo utaisha baada ya dakika 2.</p>
-
-  <label for="giftGbAmount">Kiasi cha zawadi (GB)</label>
-  <input
-    id="giftGbAmount"
-    type="number"
-    min="0.1"
-    step="0.1"
-    placeholder="Mfano: 3"
-  >
-
-  <button type="button" onclick="createGBGiftCode()">
-    TENGENEZA MSIMBO
-  </button>
-
-  <div id="giftCodeAdminMsg" class="message"></div>
-
-  <div id="giftCodeResult" class="package hidden">
-    <p>Msimbo wa zawadi:</p>
-    <h2 id="giftCodeText"></h2>
-    <p>Thamani: <strong id="giftCodeGB"></strong></p>
-    <p>Muda uliobaki: <strong id="giftCodeTimer">120</strong> sekunde</p>
-    <button type="button" onclick="copyGBGiftCode()">NAKILI MSIMBO</button>
-  </div>
-</div>
-
 <div class="card">
 <h3>⚙️ SETTINGS ZA GBPESA</h3>
 
@@ -2651,8 +2623,8 @@ loadWithdrawalTicker();
     box-shadow: 0 4px 12px rgba(0,0,0,0.25);
   "
 >
-  <span style="font-size:20px;">📞🌍</span>
-  <span>WhatsApp Support</span>
+  <span style="font-size:20px;">📞</span>
+  <span>HUDUMA KWA WATEJA</span>
 </a>
 
 <script>
@@ -3015,6 +2987,119 @@ function closeDashboardSections() {
   }
         }
  
+let gbGiftTimerInterval = null;
+
+async function createGBGiftCode() {
+  const amountInput = document.getElementById("giftGbAmount");
+  const msg = document.getElementById("giftCodeAdminMsg");
+  const result = document.getElementById("giftCodeResult");
+  const codeText = document.getElementById("giftCodeText");
+  const codeGB = document.getElementById("giftCodeGB");
+  const timerText = document.getElementById("giftCodeTimer");
+  const button = document.querySelector(
+    '#adminGiftCodes button[onclick="createGBGiftCode()"]'
+  );
+
+  if (!amountInput || !msg || !result || !codeText || !codeGB) {
+    alert("Sehemu za zawadi hazijapatikana. Kagua HTML ya Admin.");
+    return;
+  }
+
+  const amount = Number(amountInput.value);
+
+  msg.textContent = "";
+  result.classList.add("hidden");
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    msg.textContent = "Weka kiasi sahihi cha GB.";
+    return;
+  }
+
+  if (
+    typeof supabaseClient === "undefined" ||
+    !supabaseClient ||
+    typeof supabaseClient.rpc !== "function"
+  ) {
+    msg.textContent = "Muunganiko wa Supabase haujapatikana.";
+    return;
+  }
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "INATENGENEZA...";
+  }
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "create_gb_gift_code",
+      { p_gb_amount: amount }
+    );
+
+    if (error) {
+      console.error("Create GB gift error:", error);
+      msg.textContent = "Kosa: " + error.message;
+      return;
+    }
+
+    if (!data || !data.success || !data.code) {
+      console.error("Unexpected gift response:", data);
+      msg.textContent =
+        "Msimbo haukupatikana. Jibu: " +
+        JSON.stringify(data);
+      return;
+    }
+
+    codeText.textContent = data.code;
+    codeGB.textContent = data.gb_amount + " GB";
+    result.classList.remove("hidden");
+
+    if (gbGiftTimerInterval) {
+      clearInterval(gbGiftTimerInterval);
+      gbGiftTimerInterval = null;
+    }
+
+    const expiresAt = new Date(data.expires_at).getTime();
+
+    function updateGiftTimer() {
+      const remaining = Math.max(
+        0,
+        Math.ceil((expiresAt - Date.now()) / 1000)
+      );
+
+      if (timerText) {
+        timerText.textContent = remaining;
+      }
+
+      if (remaining <= 0) {
+        clearInterval(gbGiftTimerInterval);
+        gbGiftTimerInterval = null;
+        msg.textContent =
+          "Muda wa msimbo umeisha. Tengeneza mwingine.";
+      }
+    }
+
+    updateGiftTimer();
+
+    if (expiresAt > Date.now()) {
+      gbGiftTimerInterval = setInterval(
+        updateGiftTimer,
+        1000
+      );
+    }
+
+    amountInput.value = "";
+  } catch (err) {
+    console.error("Create GB gift exception:", err);
+    msg.textContent =
+      "Hitilafu: " + (err.message || String(err));
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "TENGENEZA MSIMBO";
+    }
+  }
+}
+
 </script>
 
 </body>
