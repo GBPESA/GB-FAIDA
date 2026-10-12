@@ -1135,9 +1135,13 @@ async function claimGBGiftCode() {
       await loadWallet();
     }
 
-  } catch (err) {
-    msg.textContent = "Hitilafu imetokea. Jaribu tena.";
-  } finally {
+  
+} catch (err) {
+  console.error("Claim GB gift error:", err);
+  msg.textContent =
+    "Hitilafu: " + (err.message || String(err));
+} finally {
+
     button.disabled = false;
     button.textContent = "DAI ZAWADI YANGU";
   }
