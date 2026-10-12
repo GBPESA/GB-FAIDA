@@ -886,7 +886,126 @@ select {
 min-height: 43px;
 }
  }
- 
+ /* GBPESA — EMERALD FINTECH COLORS */
+:root {
+--gb-green: #00c781;
+--gb-dark: #07130f;
+--gb-card: #10251c;
+--gb-border: #254637;
+--gb-white: #f4fff8;
+--gb-muted: #a9c1b4;
+}
+
+html, body {
+background: #07130f !important;
+color: var(--gb-white) !important;
+}
+
+.app {
+background: #091810 !important;
+color: var(--gb-white) !important;
+}
+
+.gbpesa-brand {
+background: linear-gradient(135deg, #06140e, #075c3b, #00a86b) !important;
+border-color: #00c781 !important;
+}
+
+.card,
+.package,
+.adminItem,
+.dashboard-section,
+#dashboardMenu,
+#aboutUs,
+#referralCard {
+background: #10251c !important;
+color: var(--gb-white) !important;
+border: 1px solid var(--gb-border) !important;
+border-radius: 18px !important;
+box-shadow: 0 6px 20px rgba(0,0,0,.16) !important;
+}
+
+h2, h3, h4, label, b, strong {
+color: #f4fff8 !important;
+}
+
+p, small, li, span {
+color: var(--gb-muted);
+}
+
+.balanceBox {
+background: linear-gradient(135deg, #087548, #00b978) !important;
+border: 1px solid #36e0a0 !important;
+border-radius: 17px !important;
+}
+
+.balanceBox strong,
+.balanceBox small,
+.balanceBox span {
+color: #ffffff !important;
+}
+
+input, select, textarea {
+background: #071811 !important;
+color: #f4fff8 !important;
+border: 1px solid #315844 !important;
+border-radius: 12px !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+color: #8eaa9a !important;
+}
+
+button {
+background: linear-gradient(135deg, #00c781, #07814f) !important;
+color: #ffffff !important;
+border: 1px solid transparent !important;
+border-radius: 12px !important;
+font-weight: 700 !important;
+}
+
+button.secondary {
+background: #e8fff2 !important;
+color: #087548 !important;
+border: 1px solid #8de0b8 !important;
+}
+
+.nav {
+background: #10251c !important;
+border: 1px solid #254637 !important;
+border-radius: 16px !important;
+}
+
+.nav button {
+background: #18382a !important;
+color: #e2fff0 !important;
+}
+
+.nav button:hover,
+.nav button:focus {
+background: #00a86b !important;
+color: #ffffff !important;
+}
+
+.withdraw-ticker {
+background: #0d2117 !important;
+color: #e8fff2 !important;
+border-color: #254637 !important;
+}
+
+footer {
+background: #07130f !important;
+color: #a9c1b4 !important;
+}
+
+.error {
+color: #ff8d98 !important;
+}
+
+.hidden {
+display: none !important;
+ }
 </style>
 </head>
 
@@ -2708,126 +2827,7 @@ function closeDashboardSections() {
     });
   }
         }
- /* GBPESA — EMERALD FINTECH COLORS */
-:root {
---gb-green: #00c781;
---gb-dark: #07130f;
---gb-card: #10251c;
---gb-border: #254637;
---gb-white: #f4fff8;
---gb-muted: #a9c1b4;
-}
-
-html, body {
-background: #07130f !important;
-color: var(--gb-white) !important;
-}
-
-.app {
-background: #091810 !important;
-color: var(--gb-white) !important;
-}
-
-.gbpesa-brand {
-background: linear-gradient(135deg, #06140e, #075c3b, #00a86b) !important;
-border-color: #00c781 !important;
-}
-
-.card,
-.package,
-.adminItem,
-.dashboard-section,
-#dashboardMenu,
-#aboutUs,
-#referralCard {
-background: #10251c !important;
-color: var(--gb-white) !important;
-border: 1px solid var(--gb-border) !important;
-border-radius: 18px !important;
-box-shadow: 0 6px 20px rgba(0,0,0,.16) !important;
-}
-
-h2, h3, h4, label, b, strong {
-color: #f4fff8 !important;
-}
-
-p, small, li, span {
-color: var(--gb-muted);
-}
-
-.balanceBox {
-background: linear-gradient(135deg, #087548, #00b978) !important;
-border: 1px solid #36e0a0 !important;
-border-radius: 17px !important;
-}
-
-.balanceBox strong,
-.balanceBox small,
-.balanceBox span {
-color: #ffffff !important;
-}
-
-input, select, textarea {
-background: #071811 !important;
-color: #f4fff8 !important;
-border: 1px solid #315844 !important;
-border-radius: 12px !important;
-}
-
-input::placeholder,
-textarea::placeholder {
-color: #8eaa9a !important;
-}
-
-button {
-background: linear-gradient(135deg, #00c781, #07814f) !important;
-color: #ffffff !important;
-border: 1px solid transparent !important;
-border-radius: 12px !important;
-font-weight: 700 !important;
-}
-
-button.secondary {
-background: #e8fff2 !important;
-color: #087548 !important;
-border: 1px solid #8de0b8 !important;
-}
-
-.nav {
-background: #10251c !important;
-border: 1px solid #254637 !important;
-border-radius: 16px !important;
-}
-
-.nav button {
-background: #18382a !important;
-color: #e2fff0 !important;
-}
-
-.nav button:hover,
-.nav button:focus {
-background: #00a86b !important;
-color: #ffffff !important;
-}
-
-.withdraw-ticker {
-background: #0d2117 !important;
-color: #e8fff2 !important;
-border-color: #254637 !important;
-}
-
-footer {
-background: #07130f !important;
-color: #a9c1b4 !important;
-}
-
-.error {
-color: #ff8d98 !important;
-}
-
-.hidden {
-display: none !important;
- }
+ 
 </script>
 
 </body>
