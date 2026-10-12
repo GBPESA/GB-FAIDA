@@ -1006,6 +1006,82 @@ color: #ff8d98 !important;
 .hidden {
 display: none !important;
  }
+ 
+let gbGiftTimerInterval = null;
+
+async function createGBGiftCode() {
+  const amountInput = document.getElementById("giftGbAmount");
+  const msg = document.getElementById("giftCodeAdminMsg");
+  const result = document.getElementById("giftCodeResult");
+  const amount = Number(amountInput.value);
+
+  msg.textContent = "";
+  result.classList.add("hidden");
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    msg.textContent = "Weka kiasi sahihi cha GB.";
+    return;
+  }
+
+  const { data, error } = await supabaseClient.rpc(
+    "create_gb_gift_code",
+    { p_gb_amount: amount }
+  );
+
+  if (error) {
+    msg.textContent = "Imeshindikana: " + error.message;
+    return;
+  }
+
+  if (!data || !data.success || !data.code) {
+    msg.textContent = "Msimbo haukutengenezwa. Jaribu tena.";
+    return;
+  }
+
+  document.getElementById("giftCodeText").textContent = data.code;
+  document.getElementById("giftCodeGB").textContent =
+    data.gb_amount + " GB";
+
+  result.classList.remove("hidden");
+
+  if (gbGiftTimerInterval) clearInterval(gbGiftTimerInterval);
+
+  const expiresAt = new Date(data.expires_at).getTime();
+
+  function updateGiftTimer() {
+    const remaining = Math.max(
+      0,
+      Math.ceil((expiresAt - Date.now()) / 1000)
+    );
+
+    document.getElementById("giftCodeTimer").textContent = remaining;
+
+    if (remaining <= 0) {
+      clearInterval(gbGiftTimerInterval);
+      gbGiftTimerInterval = null;
+      msg.textContent = "Muda wa msimbo huu umeisha.";
+    }
+  }
+
+  updateGiftTimer();
+  gbGiftTimerInterval = setInterval(updateGiftTimer, 1000);
+}
+
+async function copyGBGiftCode() {
+  const code = document.getElementById("giftCodeText").textContent;
+
+  if (!code) return;
+
+  try {
+    await navigator.clipboard.writeText(code);
+    document.getElementById("giftCodeAdminMsg").textContent =
+      "Msimbo umenakiliwa. Shiriki na watumiaji kabla hauja-expire.";
+  } catch (error) {
+    document.getElementById("giftCodeAdminMsg").textContent =
+      "Nakili msimbo huu mwenyewe: " + code;
+  }
+}
+
 </style>
 </head>
 
@@ -1285,6 +1361,34 @@ display: none !important;
 <div class="loader">Inapakia maombi ya deposit...</div>
 </div>
  </div> 
+
+<div class="card" id="adminGiftCodes">
+  <h3>🎁 MISIMBO YA ZAWADI ZA GB</h3>
+  <p>Tengeneza msimbo wa zawadi kwa watumiaji. Msimbo utaisha baada ya dakika 2.</p>
+
+  <label for="giftGbAmount">Kiasi cha zawadi (GB)</label>
+  <input
+    id="giftGbAmount"
+    type="number"
+    min="0.1"
+    step="0.1"
+    placeholder="Mfano: 3"
+  >
+
+  <button type="button" onclick="createGBGiftCode()">
+    TENGENEZA MSIMBO
+  </button>
+
+  <div id="giftCodeAdminMsg" class="message"></div>
+
+  <div id="giftCodeResult" class="package hidden">
+    <p>Msimbo wa zawadi:</p>
+    <h2 id="giftCodeText"></h2>
+    <p>Thamani: <strong id="giftCodeGB"></strong></p>
+    <p>Muda uliobaki: <strong id="giftCodeTimer">120</strong> sekunde</p>
+    <button type="button" onclick="copyGBGiftCode()">NAKILI MSIMBO</button>
+  </div>
+</div>
 
 <div class="card">
 <h3>⚙️ SETTINGS ZA GBPESA</h3>
