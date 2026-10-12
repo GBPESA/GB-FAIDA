@@ -1029,14 +1029,20 @@ async function createGBGiftCode() {
   );
 
   if (error) {
-    msg.textContent = "Imeshindikana: " + error.message;
-    return;
+  msg.textContent = "KOSA LA SUPABASE: " + error.message;
+  msg.style.display = "block";
+  msg.style.color = "#ff6b6b";
+  console.error("Gift code error:", error);
+  return;
   }
 
   if (!data || !data.success || !data.code) {
-    msg.textContent = "Msimbo haukutengenezwa. Jaribu tena.";
-    return;
-  }
+  msg.textContent =
+    "Jibu la Supabase halijakamilika: " +
+    JSON.stringify(data);
+  console.error("Gift code response:", data);
+  return;
+ } 
 
   document.getElementById("giftCodeText").textContent = data.code;
   document.getElementById("giftCodeGB").textContent =
