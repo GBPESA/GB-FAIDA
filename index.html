@@ -1006,6 +1006,7 @@ color: #ff8d98 !important;
 .hidden {
 display: none !important;
  }
+ } 
 </style>
 </head>
 
@@ -1149,25 +1150,29 @@ display: none !important;
     <div id="withdrawMsg"></div>
     <button class="secondary" onclick="closeDashboardSections()">RUDI DASHBOARD</button>
   </div></div>
-<!-- USER: GB GIFT REWARD -->
+
+<!-- USER: DAI ZAWADI ZA GB -->
 <div class="card" id="userGiftCodeSection">
   <h3>🎁 DAI ZAWADI YA GB</h3>
-  <p>Una msimbo wa zawadi? Weka hapa upate GB zako.</p>
+  <p>Weka msimbo uliopewa na Admin ili upokee zawadi yako ya GB.</p>
 
   <label for="userGiftCode">Msimbo wa zawadi</label>
   <input
     id="userGiftCode"
     type="text"
-    placeholder="Mfano: GB-ABC1234567"
+    placeholder="Weka msimbo hapa"
     autocomplete="off"
-    style="text-transform:uppercase"
   >
 
-  <button type="button" onclick="claimGBGiftCode()">
+  <button
+    type="button"
+    id="claimGiftButton"
+    onclick="claimGBGiftCode()"
+  >
     DAI ZAWADI YANGU
   </button>
 
-  div< id="userGiftCodeMsg" class="message"></div>
+  <p id="userGiftCodeMsg" class="message"></p>
 </div>
 
 <!-- WALLET -->
@@ -2985,6 +2990,71 @@ async function createGBGiftCode() {
       button.disabled = false;
       button.textContent = "TENGENEZA MSIMBO";
     }
+  }
+}
+
+async function claimGBGiftCode() {
+  const input = document.getElementById("userGiftCode");
+  const msg = document.getElementById("userGiftCodeMsg");
+  const button = document.getElementById("claimGiftButton");
+
+  if (!input || !msg || !button) {
+    alert("Sehemu ya kudai zawadi haijakamilika kwenye HTML.");
+    return;
+  }
+
+  const code = input.value.trim().toUpperCase();
+
+  if (!code) {
+    msg.textContent = "Tafadhali weka msimbo wa zawadi.";
+    return;
+  }
+
+  if (typeof supabaseClient === "undefined" || !supabaseClient) {
+    msg.textContent = "Muunganiko wa Supabase haujapatikana.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "INAKAGUA MSIMBO...";
+  msg.textContent = "Tafadhali subiri...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "claim_gb_gift_code",
+      { p_code: code }
+    );
+
+    if (error) {
+      console.error("Claim gift error:", error);
+      msg.textContent = "Imeshindikana: " + error.message;
+      return;
+    }
+
+    if (!data || data.success !== true) {
+      msg.textContent =
+        "Zawadi haijathibitishwa. " + JSON.stringify(data);
+      return;
+    }
+
+    msg.textContent =
+      "Hongera! Umepokea " + data.gb_awarded +
+      " GB kwenye wallet yako! 🎉";
+
+    input.value = "";
+
+    if (typeof loadDashboard === "function") {
+      await loadDashboard();
+    } else if (typeof loadWallet === "function") {
+      await loadWallet();
+    }
+
+  } catch (err) {
+    console.error("Claim gift exception:", err);
+    msg.textContent = "Hitilafu: " + (err.message || String(err));
+  } finally {
+    button.disabled = false;
+    button.textContent = "DAI ZAWADI YANGU";
   }
 }
 
