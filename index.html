@@ -1368,6 +1368,32 @@ display: none !important;
 GBPESA © 2026
 </footer>
 
+<!-- ADMIN: TUMA UJUMBE KWA USERS -->
+<div class="card" id="adminMessagesSection">
+  <h3>📢 UJUMBE KWA USERS WOTE</h3>
+
+  <label for="adminMessageTitle">Kichwa cha ujumbe</label>
+  <input
+    id="adminMessageTitle"
+    type="text"
+    placeholder="Mfano: Taarifa muhimu ya GBPESA"
+  >
+
+  <label for="adminMessageText">Andika ujumbe</label>
+  <textarea
+    id="adminMessageText"
+    rows="5"
+    maxlength="2000"
+    placeholder="Andika ujumbe ambao users wote watausoma..."
+  ></textarea>
+
+  <button type="button" onclick="sendAdminMessage()">
+    TUMA KWA USERS WOTE
+  </button>
+
+  <p id="adminMessageStatus" class="message"></p>
+</div>
+
 </div>
 
 
@@ -3055,6 +3081,60 @@ async function claimGBGiftCode() {
   } finally {
     button.disabled = false;
     button.textContent = "DAI ZAWADI YANGU";
+  }
+}
+
+async function sendAdminMessage() {
+  const titleInput = document.getElementById("adminMessageTitle");
+  const messageInput = document.getElementById("adminMessageText");
+  const status = document.getElementById("adminMessageStatus");
+
+  if (!titleInput || !messageInput || !status) {
+    alert("Sehemu ya ujumbe haijakamilika.");
+    return;
+  }
+
+  const title = titleInput.value.trim() || "Ujumbe kutoka GBPESA";
+  const message = messageInput.value.trim();
+
+  if (!message) {
+    status.textContent = "Andika ujumbe kwanza.";
+    return;
+  }
+
+  status.textContent = "Inatuma ujumbe...";
+
+  try {
+    const { data: authData, error: authError } =
+      await supabaseClient.auth.getUser();
+
+    if (authError || !authData.user) {
+      status.textContent = "Ingia kwenye akaunti ya Admin kwanza.";
+      return;
+    }
+
+    const { error } = await supabaseClient
+      .from("admin_messages")
+      .insert({
+        title: title,
+        message: message,
+        created_by: authData.user.id
+      });
+
+    if (error) {
+      console.error("Admin message error:", error);
+      status.textContent = "Imeshindikana kutuma: " + error.message;
+      return;
+    }
+
+    status.textContent = "Ujumbe umetumwa na kuhifadhiwa!";
+
+    titleInput.value = "";
+    messageInput.value = "";
+
+  } catch (err) {
+    console.error(err);
+    status.textContent = "Hitilafu: " + (err.message || String(err));
   }
 }
 
