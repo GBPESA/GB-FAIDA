@@ -3146,48 +3146,91 @@ async function sendAdminMessage() {
   }
 }
 
+
 async function loadUserAdminMessages() {
   const container = document.getElementById("userAdminMessagesList");
   if (!container) return;
 
   container.textContent = "Inapakia ujumbe...";
 
-  const { data, error } = await supabaseClient
-    .from("admin_messages")
-    .select("id, title, message, created_at")
-    .order("created_at", { ascending: false })
-    .limit(50);
+  try {
+    const { data: authData, error: authError } =
+      await supabaseClient.auth.getUser();
 
-  if (error) {
-    console.error("Load admin messages error:", error);
-    container.textContent = "Imeshindikana kupakia ujumbe. Jaribu tena.";
-    return;
+    if (authError || !authData.user) {
+      container.textContent = "Ingia kwenye akaunti yako kuona ujumbe.";
+      return;
+    }
+
+    const userId = authData.user.id;
+
+    const { data: messages, error: messagesError } =
+      await supabaseClient
+        .from("admin_messages")
+        .select("id, title, message, created_at")
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+    if (messagesError) throw messagesError;
+
+    const { data: hiddenMessages, error: hiddenError } =
+      await supabaseClient
+        .from("user_hidden_admin_messages")
+        .select("message_id")
+        .eq("user_id", userId);
+
+    if (hiddenError) throw hiddenError;
+
+    const hiddenIds = new Set(
+      (hiddenMessages || []).map(function(item) {
+        return String(item.message_id);
+      })
+    );
+
+    const visibleMessages = (messages || []).filter(function(item) {
+      return !hiddenIds.has(String(item.id));
+    });
+
+    container.replaceChildren();
+
+    if (visibleMessages.length === 0) {
+      container.textContent = "Hakuna ujumbe mpya kwa sasa.";
+      return;
+    }
+
+    visibleMessages.forEach(function(item) {
+      const card = document.createElement("div");
+      card.className = "package";
+
+      const heading = document.createElement("h4");
+      heading.textContent = item.title;
+
+      const message = document.createElement("p");
+      message.textContent = item.message;
+
+      const date = document.createElement("small");
+      date.textContent =
+        new Date(item.created_at).toLocaleString("sw-TZ");
+
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.textContent = "🗑️ Futa ujumbe";
+
+      deleteButton.addEventListener("click", function() {
+        hideUserAdminMessage(item.id, deleteButton);
+      });
+
+      card.append(heading, message, date, deleteButton);
+      container.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error("Load admin messages error:", err);
+    container.textContent =
+      "Imeshindikana kupakia ujumbe. Tafadhali jaribu tena.";
   }
-
-  container.replaceChildren();
-
-  if (!data || data.length === 0) {
-    container.textContent = "Hakuna ujumbe mpya kwa sasa.";
-    return;
-  }
-
-  data.forEach(function(item) {
-    const card = document.createElement("div");
-    card.className = "package";
-
-    const heading = document.createElement("h4");
-    heading.textContent = item.title;
-
-    const message = document.createElement("p");
-    message.textContent = item.message;
-
-    const date = document.createElement("small");
-    date.textContent = new Date(item.created_at).toLocaleString("sw-TZ");
-
-    card.append(heading, message, date);
-    container.appendChild(card);
-  });
 }
+
 
 async function hideUserAdminMessage(messageId, button) {
   if (!confirm("Unataka kufuta ujumbe huu kwenye akaunti yako?")) {
