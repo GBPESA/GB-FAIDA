@@ -1,0 +1,10 @@
+{
+"name": "GBPESA",
+"short_name": "GBPESA",
+"start_url": "./",
+"scope": "./",
+"display": "standalone",
+"background_color": "#f3f7f5",
+"theme_color": "#087f5b",
+"icons": []
+}
