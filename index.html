@@ -1151,6 +1151,13 @@ display: none !important;
     <button class="secondary" onclick="closeDashboardSections()">RUDI DASHBOARD</button>
   </div></div>
 
+<!-- USER: SOMA UJUMBE WA ADMIN -->
+<div class="card" id="userAdminMessages">
+  <h3>📢 TAARIFA ZA GBPESA</h3>
+  <div id="userAdminMessagesList">
+    Inapakia ujumbe...
+  </div>
+</div> 
 <!-- USER: DAI ZAWADI ZA GB -->
 <div class="card" id="userGiftCodeSection">
   <h3>🎁 DAI ZAWADI YA GB</h3>
@@ -3136,6 +3143,49 @@ async function sendAdminMessage() {
     console.error(err);
     status.textContent = "Hitilafu: " + (err.message || String(err));
   }
+}
+
+async function loadUserAdminMessages() {
+  const container = document.getElementById("userAdminMessagesList");
+  if (!container) return;
+
+  container.textContent = "Inapakia ujumbe...";
+
+  const { data, error } = await supabaseClient
+    .from("admin_messages")
+    .select("id, title, message, created_at")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (error) {
+    console.error("Load admin messages error:", error);
+    container.textContent = "Imeshindikana kupakia ujumbe. Jaribu tena.";
+    return;
+  }
+
+  container.replaceChildren();
+
+  if (!data || data.length === 0) {
+    container.textContent = "Hakuna ujumbe mpya kwa sasa.";
+    return;
+  }
+
+  data.forEach(function(item) {
+    const card = document.createElement("div");
+    card.className = "package";
+
+    const heading = document.createElement("h4");
+    heading.textContent = item.title;
+
+    const message = document.createElement("p");
+    message.textContent = item.message;
+
+    const date = document.createElement("small");
+    date.textContent = new Date(item.created_at).toLocaleString("sw-TZ");
+
+    card.append(heading, message, date);
+    container.appendChild(card);
+  });
 }
 
 </script>
