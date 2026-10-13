@@ -3189,6 +3189,41 @@ async function loadUserAdminMessages() {
   });
 }
 
+async function hideUserAdminMessage(messageId, button) {
+  if (!confirm("Unataka kufuta ujumbe huu kwenye akaunti yako?")) {
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Inafuta...";
+
+  try {
+    const { data: authData, error: authError } =
+      await supabaseClient.auth.getUser();
+
+    if (authError || !authData.user) {
+      throw new Error("Tafadhali ingia kwenye akaunti yako tena.");
+    }
+
+    const { error } = await supabaseClient
+      .from("user_hidden_admin_messages")
+      .insert({
+        user_id: authData.user.id,
+        message_id: messageId
+      });
+
+    if (error) throw error;
+
+    await loadUserAdminMessages();
+
+  } catch (err) {
+    console.error("Hide message error:", err);
+    alert("Imeshindikana kufuta ujumbe: " + err.message);
+    button.disabled = false;
+    button.textContent = "🗑️ Futa ujumbe";
+  }
+}
+
 </script>
 
 </body>
