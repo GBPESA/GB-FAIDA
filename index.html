@@ -3279,5 +3279,23 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
+ <button id="installGBPESA" style="display:none;background:#087f5b;color:white;padding:14px;border:0;border-radius:10px;width:100%;font-weight:bold" onclick="installGBPESAApp()">📲 Sakinisha GBPESA App</button>
+
+<script>
+let gbpesaInstallPrompt;
+window.addEventListener("beforeinstallprompt", function(e) {
+  e.preventDefault();
+  gbpesaInstallPrompt = e;
+  document.getElementById("installGBPESA").style.display = "block";
+});
+function installGBPESAApp() {
+  if (gbpesaInstallPrompt) {
+    gbpesaInstallPrompt.prompt();
+    gbpesaInstallPrompt = null;
+  } else {
+    alert("Fungua menyu ya Chrome kisha chagua Add to Home screen.");
+  }
+}
+</script>
 </body>
 </html>
